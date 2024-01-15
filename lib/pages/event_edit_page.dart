@@ -81,6 +81,35 @@ class _EventEditPageState extends State<EventEditPage> {
           // buildTo(),
         ],
       );
+
+  Future pickFromDateTime({required bool pickDate}) async {
+    final date = await pickDateTime(from, pickDate: pickDate);
+  }
+
+  Future<DateTime?> pickDateTime(
+    DateTime initialDate, {
+    required bool pickDate,
+    DateTime? firstDate,
+  }) async {
+    if (pickDate) {
+      final date = await showDatePicker(
+        context: context,
+        initialDate: initialDate,
+        firstDate: firstDate ?? DateTime(2015, 8),
+        lastDate: DateTime(2101),
+      );
+
+      if (date == null) return null;
+
+      final time = Duration(
+        hours: initialDate.hour,
+        minutes: initialDate.minute,
+      );
+
+      return date.add(time);
+    }
+  }
+
   Widget buildFromAndTo({
     required String title,
     required DateTime displayTime,
