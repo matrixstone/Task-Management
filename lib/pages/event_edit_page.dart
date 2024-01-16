@@ -84,10 +84,9 @@ class _EventEditPageState extends State<EventEditPage> {
 
   Future pickFromDateTime(
       {required String function, required bool pickDate}) async {
-    final date = await pickDateTime(from, pickDate: pickDate);
-    if (date == null) return;
-
     if (function == 'From') {
+      final date = await pickDateTime(from, pickDate: pickDate);
+      if (date == null) return;
       setState(() {
         from = date;
         if (date.isAfter(to)) {
@@ -95,6 +94,8 @@ class _EventEditPageState extends State<EventEditPage> {
         }
       });
     } else {
+      final date = await pickDateTime(to, pickDate: pickDate);
+      if (date == null) return;
       setState(() => to = date);
     }
   }
@@ -134,12 +135,8 @@ class _EventEditPageState extends State<EventEditPage> {
         timeOfDay.hour,
         timeOfDay.minute,
       );
-      final time = Duration(
-        hours: initialDate.hour,
-        minutes: initialDate.minute,
-      );
 
-      return date.add(time);
+      return date;
     }
   }
 
