@@ -82,8 +82,21 @@ class _EventEditPageState extends State<EventEditPage> {
         ],
       );
 
-  Future pickFromDateTime({required bool pickDate}) async {
+  Future pickFromDateTime(
+      {required String function, required bool pickDate}) async {
     final date = await pickDateTime(from, pickDate: pickDate);
+    if (date == null) return;
+
+    if (function == 'From') {
+      setState(() {
+        from = date;
+        if (date.isAfter(to)) {
+          to = DateTime(date.year, date.month, date.day, to.hour, to.minute);
+        }
+      });
+    } else {
+      setState(() => to = date);
+    }
   }
 
   Future<DateTime?> pickDateTime(
@@ -101,6 +114,26 @@ class _EventEditPageState extends State<EventEditPage> {
 
       if (date == null) return null;
 
+      final time = Duration(
+        hours: initialDate.hour,
+        minutes: initialDate.minute,
+      );
+
+      return date.add(time);
+    } else {
+      final timeOfDay = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(initialDate),
+      );
+      if (timeOfDay == null) return null;
+
+      final date = DateTime(
+        initialDate.year,
+        initialDate.month,
+        initialDate.day,
+        timeOfDay.hour,
+        timeOfDay.minute,
+      );
       final time = Duration(
         hours: initialDate.hour,
         minutes: initialDate.minute,
@@ -128,12 +161,14 @@ class _EventEditPageState extends State<EventEditPage> {
                   flex: 2,
                   child: buildDrwopdownField(
                     text: Utils.toDate(displayTime),
-                    onClicked: () {},
+                    onClicked: () =>
+                        pickFromDateTime(function: title, pickDate: true),
                   )),
               Expanded(
                   child: buildDrwopdownField(
                 text: Utils.toTime(displayTime),
-                onClicked: () {},
+                onClicked: () =>
+                    pickFromDateTime(function: title, pickDate: false),
               )),
             ],
           ),
