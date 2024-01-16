@@ -22,7 +22,7 @@ class EventEditPage extends StatefulWidget {
 
 class _EventEditPageState extends State<EventEditPage> {
   final _formKey = GlobalKey<FormState>();
-  final titleController = TextEditingController();
+  TextEditingController? titleController;
   late DateTime from;
   late DateTime to;
 
@@ -31,11 +31,12 @@ class _EventEditPageState extends State<EventEditPage> {
     super.initState();
     from = widget.event?.from ?? DateTime.now();
     to = widget.event?.to ?? DateTime.now().add(const Duration(hours: 1));
+    titleController = TextEditingController(text: widget.event?.title);
   }
 
   @override
   void dispose() {
-    titleController.dispose();
+    titleController?.dispose();
     super.dispose();
   }
 
@@ -64,6 +65,8 @@ class _EventEditPageState extends State<EventEditPage> {
         ElevatedButton.icon(
             onPressed: saveForm, icon: Icon(Icons.done), label: Text('Save'))
       ];
+
+  // TODO: Add TextFormField
   Widget buildTitle() => TextFormField(
         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         decoration: InputDecoration(
@@ -172,6 +175,7 @@ class _EventEditPageState extends State<EventEditPage> {
           ),
         ],
       );
+
   Widget buildDrwopdownField(
           {required String text, required VoidCallback onClicked}) =>
       ListTile(
@@ -179,11 +183,13 @@ class _EventEditPageState extends State<EventEditPage> {
         trailing: Icon(Icons.arrow_drop_down),
         onTap: onClicked,
       );
+
+  // TODO: Remove double save when editing.
   Future saveForm() async {
     final isValid = _formKey.currentState!.validate();
     if (isValid) {
       final event = Event(
-        title: titleController.text,
+        title: titleController!.text,
         description: '',
         from: from,
         to: to,

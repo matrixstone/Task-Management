@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:task_management/pages/calendar_widget.dart';
 import 'package:task_management/pages/event_edit_page.dart';
+import 'package:task_management/pages/navigation_drawer_widget.dart';
 import 'package:task_management/provider/event_provider.dart';
 
 void main() {
@@ -37,17 +38,38 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
   @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  String currentView = 'day';
+
+  _setCalendarView(String view) {
+    setState(() {
+      currentView = view;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    int navigationBarIndex = 0;
+    if (currentView == 'week') {
+      navigationBarIndex = 1;
+    }
+
     return Scaffold(
+        drawer: NavigationDrawerWidget(
+            setCalendarView: _setCalendarView,
+            selectedIndex: navigationBarIndex),
         appBar: AppBar(
           title: const Text('Task Management'),
           centerTitle: true,
         ),
-        body: Calendar(),
+        body: Calendar(view: currentView),
         floatingActionButton: FloatingActionButton(
           onPressed: () => Navigator.of(context).push(
             MaterialPageRoute(
