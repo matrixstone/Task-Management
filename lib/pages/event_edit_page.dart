@@ -3,8 +3,10 @@ import 'package:flutter/src/widgets/placeholder.dart';
 
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:provider/provider.dart';
 
 import '../model/event.dart';
+import '../provider/event_provider.dart';
 import '../utils.dart';
 
 class EventEditPage extends StatefulWidget {
@@ -60,7 +62,7 @@ class _EventEditPageState extends State<EventEditPage> {
 
   List<Widget> buildEditingActions() => [
         ElevatedButton.icon(
-            onPressed: () {}, icon: Icon(Icons.done), label: Text('Save'))
+            onPressed: saveForm, icon: Icon(Icons.done), label: Text('Save'))
       ];
   Widget buildTitle() => TextFormField(
         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
@@ -68,7 +70,7 @@ class _EventEditPageState extends State<EventEditPage> {
           border: UnderlineInputBorder(),
           hintText: 'Add Title',
         ),
-        onFieldSubmitted: (_) {},
+        onFieldSubmitted: (_) => saveForm(),
         controller: titleController,
         validator: (value) =>
             value != null && value.isEmpty ? 'Title cannot be empty' : null,
@@ -78,7 +80,6 @@ class _EventEditPageState extends State<EventEditPage> {
         children: [
           buildFromAndTo(title: 'From', displayTime: from),
           buildFromAndTo(title: 'To', displayTime: to),
-          // buildTo(),
         ],
       );
 
@@ -178,4 +179,18 @@ class _EventEditPageState extends State<EventEditPage> {
         trailing: Icon(Icons.arrow_drop_down),
         onTap: onClicked,
       );
+  Future saveForm() async {
+    final isValid = _formKey.currentState!.validate();
+    if (isValid) {
+      final event = Event(
+        title: titleController.text,
+        description: '',
+        from: from,
+        to: to,
+      );
+      final provider = Provider.of<EventProvider>(context, listen: false);
+      provider.addEvent(event);
+      Navigator.of(context).pop(event);
+    }
+  }
 }
