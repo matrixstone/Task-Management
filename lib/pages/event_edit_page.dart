@@ -11,9 +11,11 @@ import '../utils.dart';
 
 class EventEditPage extends StatefulWidget {
   final Event? event;
-  const EventEditPage({
+  EventProvider eventProvider;
+  EventEditPage({
     Key? key,
     this.event,
+    required this.eventProvider,
   }) : super(key: key);
 
   @override
@@ -41,39 +43,44 @@ class _EventEditPageState extends State<EventEditPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          leading: CloseButton(),
-          actions: buildEditingActions(),
-        ),
-        body: SingleChildScrollView(
-          padding: EdgeInsets.all(12),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                buildTitle(),
-                buildDateTimePickers(),
-              ],
-            ),
+  Widget build(BuildContext context) {
+    print('Testing loaded event: ${widget.event}');
+    return Scaffold(
+      appBar: AppBar(
+        leading: CloseButton(),
+        actions: buildEditingActions(widget.eventProvider),
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(12),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              buildTitle(widget.eventProvider),
+              buildDateTimePickers(),
+            ],
           ),
         ),
-      );
+      ),
+    );
+  }
 
-  List<Widget> buildEditingActions() => [
+  List<Widget> buildEditingActions(EventProvider eventProvider) => [
         ElevatedButton.icon(
-            onPressed: saveForm, icon: Icon(Icons.done), label: Text('Save'))
+            onPressed: () => saveForm(eventProvider),
+            icon: Icon(Icons.done),
+            label: Text('Save'))
       ];
 
   // TODO: Add TextFormField
-  Widget buildTitle() => TextFormField(
+  Widget buildTitle(EventProvider eventProvider) => TextFormField(
         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         decoration: InputDecoration(
           border: UnderlineInputBorder(),
           hintText: 'Add Title',
         ),
-        onFieldSubmitted: (_) => saveForm(),
+        onFieldSubmitted: (_) => saveForm(eventProvider),
         controller: titleController,
         validator: (value) =>
             value != null && value.isEmpty ? 'Title cannot be empty' : null,
@@ -185,21 +192,17 @@ class _EventEditPageState extends State<EventEditPage> {
       );
 
   // TODO: Remove double save when editing.
-  Future saveForm() async {
+  Future saveForm(EventProvider eventProvider) async {
     final isValid = _formKey.currentState!.validate();
     if (isValid) {
       final event = Event(
+        id: widget.event?.id,
         title: titleController!.text,
         description: '',
         fromDate: from,
         toDate: to,
       );
-      final provider = Provider.of<EventProvider>(context, listen: false);
-      // await provider.addEvent(event).then((value) {
-      //   Navigator.of(context).pop(event);
-      // });
-      print('Testing addEventResult not complete');
-      await provider.addEvent(event).then((value) {
+      await eventProvider.addEvent(event).then((value) {
         Navigator.of(context).pop(event);
       });
       // print('Testing addEventResult not complete222');

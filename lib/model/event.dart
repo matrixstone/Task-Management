@@ -10,7 +10,7 @@ class Event {
   final bool isAllDay;
 
   Event({
-    id,
+    this.id,
     required this.title,
     required this.description,
     required this.fromDate,
@@ -21,6 +21,7 @@ class Event {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'title': title,
       'description': description,
       'fromDate': fromDate.toIso8601String(),

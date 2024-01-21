@@ -24,7 +24,7 @@ class EventProvider extends ChangeNotifier {
         version: 1,
         onCreate: (db, version) {
           return db.execute(
-            'CREATE TABLE events(id INTEGER PRIMARY KEY, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor TEXT, isAllDay INTEGER)',
+            'CREATE TABLE events(id INTEGER PRIMARY KEY, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER)',
           );
         },
       ),
@@ -36,6 +36,7 @@ class EventProvider extends ChangeNotifier {
     final List<Map<String, dynamic>> maps = await db.query('events');
 
     return List.generate(maps.length, (i) {
+      print('Testing event id: ${maps[i]['id']}');
       return Event(
         id: maps[i]['id'] as int,
         title: maps[i]['title'] as String,
@@ -53,7 +54,7 @@ class EventProvider extends ChangeNotifier {
 
     // Update database
     WidgetsFlutterBinding.ensureInitialized();
-    print('Adding event: $event');
+    print('Testing adding event: $event');
 
     var factory = databaseFactoryFfiWeb;
     final database = factory.openDatabase(
@@ -62,7 +63,7 @@ class EventProvider extends ChangeNotifier {
         version: 1,
         onCreate: (db, version) {
           return db.execute(
-            'CREATE TABLE events(id INTEGER PRIMARY KEY, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor TEXT, isAllDay INTEGER)',
+            'CREATE TABLE events(id INTEGER PRIMARY KEY, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER)',
           );
         },
       ),
