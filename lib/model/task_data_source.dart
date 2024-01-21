@@ -1,13 +1,13 @@
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'package:task_management/model/event.dart';
+import 'package:task_management/model/task.dart';
 
-class EventDataSource extends CalendarDataSource {
-  EventDataSource(List<Event> appointments) {
+class TaskDataSource extends CalendarDataSource {
+  TaskDataSource(List<Task> appointments) {
     this.appointments = appointments;
   }
 
-  Event getEvent(int index) {
-    return appointments![index] as Event;
+  Task getTask(int index) {
+    return appointments![index] as Task;
   }
 
   @override

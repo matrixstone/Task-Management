@@ -1,19 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
-import '../model/event.dart';
+import '../model/task.dart';
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-class EventProvider extends ChangeNotifier {
+class TaskProvider extends ChangeNotifier {
   // final List<Event> _events = [];
 
   // List<Event> get events => _events;
 
-  Future<List<Event>> getAllEvents() async {
+  Future<List<Task>> getAllTasks() async {
     // Update database
     WidgetsFlutterBinding.ensureInitialized();
 
@@ -24,7 +24,7 @@ class EventProvider extends ChangeNotifier {
         version: 1,
         onCreate: (db, version) {
           return db.execute(
-            'CREATE TABLE events(id INTEGER PRIMARY KEY, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER)',
+            'CREATE TABLE tasks(id INTEGER PRIMARY KEY, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER)',
           );
         },
       ),
@@ -33,11 +33,10 @@ class EventProvider extends ChangeNotifier {
     // Get a reference to the database.
     final db = await database;
 
-    final List<Map<String, dynamic>> maps = await db.query('events');
+    final List<Map<String, dynamic>> maps = await db.query('tasks');
 
     return List.generate(maps.length, (i) {
-      print('Testing event id: ${maps[i]['id']}');
-      return Event(
+      return Task(
         id: maps[i]['id'] as int,
         title: maps[i]['title'] as String,
         description: maps[i]['description'] as String,
@@ -49,12 +48,12 @@ class EventProvider extends ChangeNotifier {
     });
   }
 
-  Future<bool> addEvent(Event event) async {
+  Future<bool> addTask(Task task) async {
     // _events.add(event);
 
     // Update database
     WidgetsFlutterBinding.ensureInitialized();
-    print('Testing adding event: $event');
+    print('Testing adding task: $task');
 
     var factory = databaseFactoryFfiWeb;
     final database = factory.openDatabase(
@@ -63,7 +62,7 @@ class EventProvider extends ChangeNotifier {
         version: 1,
         onCreate: (db, version) {
           return db.execute(
-            'CREATE TABLE events(id INTEGER PRIMARY KEY, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER)',
+            'CREATE TABLE tasks(id INTEGER PRIMARY KEY, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER)',
           );
         },
       ),
@@ -73,8 +72,8 @@ class EventProvider extends ChangeNotifier {
     final db = await database;
 
     await db.insert(
-      'events',
-      event.toMap(),
+      'tasks',
+      task.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
 

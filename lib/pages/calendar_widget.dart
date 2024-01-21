@@ -5,16 +5,16 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:task_management/main.dart';
-import 'package:task_management/model/event.dart';
-import 'package:task_management/pages/event_edit_page.dart';
-import '../model/event_data_source.dart';
-import '../provider/event_provider.dart';
+import 'package:task_management/model/task.dart';
+import 'package:task_management/pages/task_edit_page.dart';
+import '../model/task_data_source.dart';
+import '../provider/task_provider.dart';
 // import 'package:provider/provider.dart';
 
 class Calendar extends StatelessWidget {
   final String view;
-  EventProvider eventProvider;
-  Calendar({super.key, required this.view, required this.eventProvider});
+  TaskProvider taskProvider;
+  Calendar({super.key, required this.view, required this.taskProvider});
 
   @override
   Widget build(BuildContext context) {
@@ -25,36 +25,34 @@ class Calendar extends StatelessWidget {
 
     // final config = ref.watch(fetchConfigurationProvider);
     return ListenableBuilder(
-        listenable: eventProvider,
+        listenable: taskProvider,
         builder: (BuildContext context, Widget? child) {
-          return FutureBuilder<List<Event>>(
-              future: eventProvider.getAllEvents(),
+          return FutureBuilder<List<Task>>(
+              future: taskProvider.getAllTasks(),
               builder:
-                  (BuildContext context, AsyncSnapshot<List<Event>> snapshot) {
-                List<Event> events = List.empty();
+                  (BuildContext context, AsyncSnapshot<List<Task>> snapshot) {
+                List<Task> tasks = List.empty();
                 if (snapshot.hasData) {
-                  events = snapshot.data!;
+                  tasks = snapshot.data!;
                 }
 
-                print('Testing load events: $events');
+                print('Testing load tasks: $tasks');
 
                 return SfCalendar(
                   key: ValueKey(calendarView),
                   view: calendarView,
-                  dataSource: EventDataSource(events),
-                  // dataSource: EventDataSource(ref.watch(eventsProvider)),
-                  // ref.watch(events)),
+                  dataSource: TaskDataSource(tasks),
                   showNavigationArrow: true,
                   allowDragAndDrop: true,
                   allowAppointmentResize: true,
                   onAppointmentResizeEnd: resizeEnd,
                   onTap: (calendarTapDetails) {
                     if (calendarTapDetails == null) return;
-                    final event = calendarTapDetails.appointments!.first;
+                    final task = calendarTapDetails.appointments!.first;
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => EventEditPage(
-                            event: event, eventProvider: eventProvider),
+                        builder: (context) => TaskEditPage(
+                            task: task, taskProvider: taskProvider),
                       ),
                     );
                   },

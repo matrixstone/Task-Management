@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class Event {
+class Task {
   int? id;
   final String title;
   final String description;
@@ -9,7 +9,7 @@ class Event {
   final Color backgroundColor;
   final bool isAllDay;
 
-  Event({
+  Task({
     this.id,
     required this.title,
     required this.description,
@@ -33,6 +33,6 @@ class Event {
 
   @override
   String toString() {
-    return 'Event{id: $id, title: $title, description: $description, fromDate: $fromDate, toDate: $toDate, backgroundColor: $backgroundColor, isAllDay: $isAllDay}';
+    return 'Task{id: $id, title: $title, description: $description, fromDate: $fromDate, toDate: $toDate, backgroundColor: $backgroundColor, isAllDay: $isAllDay}';
   }
 }

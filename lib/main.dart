@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:task_management/pages/calendar_widget.dart';
-import 'package:task_management/pages/event_edit_page.dart';
+import 'package:task_management/pages/task_edit_page.dart';
 import 'package:task_management/pages/navigation_drawer_widget.dart';
-import 'package:task_management/provider/event_provider.dart';
-import 'package:task_management/model/event.dart';
+import 'package:task_management/provider/task_provider.dart';
+import 'package:task_management/model/task.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
@@ -62,7 +62,7 @@ class _MainPageState extends State<MainPage> {
       navigationBarIndex = 1;
     }
 
-    final EventProvider _eventProvider = EventProvider();
+    final TaskProvider _taskProvider = TaskProvider();
 
     return Scaffold(
         drawer: NavigationDrawerWidget(
@@ -72,21 +72,21 @@ class _MainPageState extends State<MainPage> {
           title: const Text('Task Management'),
           centerTitle: true,
         ),
-        body: Calendar(view: currentView, eventProvider: _eventProvider),
+        body: Calendar(view: currentView, taskProvider: _taskProvider),
         floatingActionButton: FloatingActionButton(
-          onPressed: () => _navigateEditPage(context, _eventProvider),
+          onPressed: () => _navigateEditPage(context, _taskProvider),
           tooltip: 'Add Task',
           child: const Icon(Icons.add),
         ));
   }
 
   Future<void> _navigateEditPage(
-      BuildContext context, EventProvider eventProvider) async {
+      BuildContext context, TaskProvider taskProvider) async {
     // Navigator.push returns a Future that completes after calling
     // Navigator.pop on the Selection Screen.
     final result = await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => EventEditPage(eventProvider: eventProvider),
+        builder: (context) => TaskEditPage(taskProvider: taskProvider),
       ),
     );
   }

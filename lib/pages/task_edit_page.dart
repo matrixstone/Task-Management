@@ -5,24 +5,24 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
-import '../model/event.dart';
-import '../provider/event_provider.dart';
+import '../model/task.dart';
+import '../provider/task_provider.dart';
 import '../utils.dart';
 
-class EventEditPage extends StatefulWidget {
-  final Event? event;
-  EventProvider eventProvider;
-  EventEditPage({
+class TaskEditPage extends StatefulWidget {
+  final Task? task;
+  TaskProvider taskProvider;
+  TaskEditPage({
     Key? key,
-    this.event,
-    required this.eventProvider,
+    this.task,
+    required this.taskProvider,
   }) : super(key: key);
 
   @override
-  State<EventEditPage> createState() => _EventEditPageState();
+  State<TaskEditPage> createState() => _TaskEditPageState();
 }
 
-class _EventEditPageState extends State<EventEditPage> {
+class _TaskEditPageState extends State<TaskEditPage> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController? titleController;
   late DateTime from;
@@ -31,9 +31,9 @@ class _EventEditPageState extends State<EventEditPage> {
   @override
   void initState() {
     super.initState();
-    from = widget.event?.fromDate ?? DateTime.now();
-    to = widget.event?.toDate ?? DateTime.now().add(const Duration(hours: 1));
-    titleController = TextEditingController(text: widget.event?.title);
+    from = widget.task?.fromDate ?? DateTime.now();
+    to = widget.task?.toDate ?? DateTime.now().add(const Duration(hours: 1));
+    titleController = TextEditingController(text: widget.task?.title);
   }
 
   @override
@@ -44,11 +44,11 @@ class _EventEditPageState extends State<EventEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    print('Testing loaded event: ${widget.event}');
+    print('Testing loaded event: ${widget.task}');
     return Scaffold(
       appBar: AppBar(
         leading: CloseButton(),
-        actions: buildEditingActions(widget.eventProvider),
+        actions: buildEditingActions(widget.taskProvider),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(12),
@@ -57,7 +57,7 @@ class _EventEditPageState extends State<EventEditPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              buildTitle(widget.eventProvider),
+              buildTitle(widget.taskProvider),
               buildDateTimePickers(),
             ],
           ),
@@ -66,21 +66,21 @@ class _EventEditPageState extends State<EventEditPage> {
     );
   }
 
-  List<Widget> buildEditingActions(EventProvider eventProvider) => [
+  List<Widget> buildEditingActions(TaskProvider taskProvider) => [
         ElevatedButton.icon(
-            onPressed: () => saveForm(eventProvider),
+            onPressed: () => saveForm(taskProvider),
             icon: Icon(Icons.done),
             label: Text('Save'))
       ];
 
   // TODO: Add TextFormField
-  Widget buildTitle(EventProvider eventProvider) => TextFormField(
+  Widget buildTitle(TaskProvider taskProvider) => TextFormField(
         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         decoration: InputDecoration(
           border: UnderlineInputBorder(),
           hintText: 'Add Title',
         ),
-        onFieldSubmitted: (_) => saveForm(eventProvider),
+        onFieldSubmitted: (_) => saveForm(taskProvider),
         controller: titleController,
         validator: (value) =>
             value != null && value.isEmpty ? 'Title cannot be empty' : null,
@@ -192,18 +192,18 @@ class _EventEditPageState extends State<EventEditPage> {
       );
 
   // TODO: Remove double save when editing.
-  Future saveForm(EventProvider eventProvider) async {
+  Future saveForm(TaskProvider taskProvider) async {
     final isValid = _formKey.currentState!.validate();
     if (isValid) {
-      final event = Event(
-        id: widget.event?.id,
+      final task = Task(
+        id: widget.task?.id,
         title: titleController!.text,
         description: '',
         fromDate: from,
         toDate: to,
       );
-      await eventProvider.addEvent(event).then((value) {
-        Navigator.of(context).pop(event);
+      await taskProvider.addTask(task).then((value) {
+        Navigator.of(context).pop(task);
       });
       // print('Testing addEventResult not complete222');
       // // Navigator.of(context).pop(event);
