@@ -1,26 +1,88 @@
 import 'package:flutter/cupertino.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
 import '../model/event.dart';
+import 'dart:async';
+
+import 'package:flutter/widgets.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 class EventProvider extends ChangeNotifier {
-  final List<Event> _events = [];
+  // final List<Event> _events = [];
 
-  List<Event> get events => _events;
+  // List<Event> get events => _events;
 
-  void addEvent(Event event) {
-    _events.add(event);
-    notifyListeners();
+  Future<List<Event>> getAllEvents() async {
+    // Update database
+    WidgetsFlutterBinding.ensureInitialized();
+
+    var factory = databaseFactoryFfiWeb;
+    final database = factory.openDatabase(
+      join(await getDatabasesPath(), 'task_management.db'),
+      options: OpenDatabaseOptions(
+        version: 1,
+        onCreate: (db, version) {
+          return db.execute(
+            'CREATE TABLE events(id INTEGER PRIMARY KEY, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor TEXT, isAllDay INTEGER)',
+          );
+        },
+      ),
+    );
+
+    // Get a reference to the database.
+    final db = await database;
+
+    final List<Map<String, dynamic>> maps = await db.query('events');
+
+    return List.generate(maps.length, (i) {
+      return Event(
+        id: maps[i]['id'] as int,
+        title: maps[i]['title'] as String,
+        description: maps[i]['description'] as String,
+        fromDate: DateTime.parse(maps[i]['fromDate'] as String),
+        toDate: DateTime.parse(maps[i]['toDate'] as String),
+        backgroundColor: Color(maps[i]['backgroundColor'] as int),
+        isAllDay: maps[i]['isAllDay'] == 1,
+      );
+    });
   }
 
-  void editEvent(Event event, Event newEvent) {
-    final index = _events.indexOf(event);
+  Future<bool> addEvent(Event event) async {
+    // _events.add(event);
 
-    _events[index] = newEvent;
+    // Update database
+    WidgetsFlutterBinding.ensureInitialized();
+    print('Adding event: $event');
+
+    var factory = databaseFactoryFfiWeb;
+    final database = factory.openDatabase(
+      join(await getDatabasesPath(), 'task_management.db'),
+      options: OpenDatabaseOptions(
+        version: 1,
+        onCreate: (db, version) {
+          return db.execute(
+            'CREATE TABLE events(id INTEGER PRIMARY KEY, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor TEXT, isAllDay INTEGER)',
+          );
+        },
+      ),
+    );
+
+    // Get a reference to the database.
+    final db = await database;
+
+    await db.insert(
+      'events',
+      event.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+
     notifyListeners();
+    return true;
   }
 
-  void deleteEvent(Event event) {
-    _events.remove(event);
-    notifyListeners();
-  }
+  // void deleteEvent(Event event) {
+  //   _events.remove(event);
+  //   notifyListeners();
+  // }
 }

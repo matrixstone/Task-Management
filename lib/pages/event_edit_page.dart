@@ -29,8 +29,8 @@ class _EventEditPageState extends State<EventEditPage> {
   @override
   void initState() {
     super.initState();
-    from = widget.event?.from ?? DateTime.now();
-    to = widget.event?.to ?? DateTime.now().add(const Duration(hours: 1));
+    from = widget.event?.fromDate ?? DateTime.now();
+    to = widget.event?.toDate ?? DateTime.now().add(const Duration(hours: 1));
     titleController = TextEditingController(text: widget.event?.title);
   }
 
@@ -191,12 +191,23 @@ class _EventEditPageState extends State<EventEditPage> {
       final event = Event(
         title: titleController!.text,
         description: '',
-        from: from,
-        to: to,
+        fromDate: from,
+        toDate: to,
       );
       final provider = Provider.of<EventProvider>(context, listen: false);
-      provider.addEvent(event);
-      Navigator.of(context).pop(event);
+      // await provider.addEvent(event).then((value) {
+      //   Navigator.of(context).pop(event);
+      // });
+      print('Testing addEventResult not complete');
+      await provider.addEvent(event).then((value) {
+        Navigator.of(context).pop(event);
+      });
+      // print('Testing addEventResult not complete222');
+      // // Navigator.of(context).pop(event);
+      // if (addEventResult) {
+
+      // }
+      // Navigator.pop();
     }
   }
 }
