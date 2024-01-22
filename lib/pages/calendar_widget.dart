@@ -36,8 +36,6 @@ class Calendar extends StatelessWidget {
                   tasks = snapshot.data!;
                 }
 
-                print('Testing load tasks: $tasks');
-
                 return SfCalendar(
                   key: ValueKey(calendarView),
                   view: calendarView,

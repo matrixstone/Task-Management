@@ -1,19 +1,17 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
-import '../model/task.dart';
+import '../model/project.dart';
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-class TaskProvider extends ChangeNotifier {
-  // final List<Event> _events = [];
-
-  // List<Event> get events => _events;
-
-  Future<List<Task>> getAllTasks() async {
+class ProjectProvider extends ChangeNotifier {
+  Future<List<Project>> getAllProjects() async {
     // Update database
     WidgetsFlutterBinding.ensureInitialized();
 
@@ -22,10 +20,7 @@ class TaskProvider extends ChangeNotifier {
       join(await getDatabasesPath(), 'task_management.db'),
       options: OpenDatabaseOptions(
         version: 1,
-        onCreate: (db, version) async {
-          await db.execute(
-            'CREATE TABLE tasks(id INTEGER PRIMARY KEY, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER)',
-          );
+        onCreate: (db, version) {
           return db.execute(
             'CREATE TABLE IF NOT EXISTS projects(id INTEGER PRIMARY KEY, title TEXT, description TEXT)',
           );
@@ -36,37 +31,31 @@ class TaskProvider extends ChangeNotifier {
     // Get a reference to the database.
     final db = await database;
 
-    final List<Map<String, dynamic>> maps = await db.query('tasks');
+    final List<Map<String, dynamic>> maps = await db.query('projects');
+    log('Testing all projects: {$maps}');
 
     return List.generate(maps.length, (i) {
-      return Task(
+      return Project(
         id: maps[i]['id'] as int,
         title: maps[i]['title'] as String,
         description: maps[i]['description'] as String,
-        fromDate: DateTime.parse(maps[i]['fromDate'] as String),
-        toDate: DateTime.parse(maps[i]['toDate'] as String),
-        backgroundColor: Color(maps[i]['backgroundColor'] as int),
-        isAllDay: maps[i]['isAllDay'] == 1,
       );
     });
   }
 
-  Future<bool> addTask(Task task) async {
+  Future<bool> addProject(Project project) async {
     // _events.add(event);
 
     // Update database
     WidgetsFlutterBinding.ensureInitialized();
-    print('Testing adding task: $task');
+    log('Testing project to add: {$project}');
 
     var factory = databaseFactoryFfiWeb;
     final database = factory.openDatabase(
       join(await getDatabasesPath(), 'task_management.db'),
       options: OpenDatabaseOptions(
         version: 1,
-        onCreate: (db, version) async {
-          await db.execute(
-            'CREATE TABLE tasks(id INTEGER PRIMARY KEY, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER)',
-          );
+        onCreate: (db, version) {
           return db.execute(
             'CREATE TABLE IF NOT EXISTS projects(id INTEGER PRIMARY KEY, title TEXT, description TEXT)',
           );
@@ -77,18 +66,24 @@ class TaskProvider extends ChangeNotifier {
     // Get a reference to the database.
     final db = await database;
 
-    await db.insert(
-      'tasks',
-      task.toMap(),
+    log('Testing 2222');
+
+    // try {
+    int fetchRes = await db.insert(
+      'projects',
+      project.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+    log('Testing project to add after insert $fetchRes');
+    //     .then((value) {
+    //   log('Testing notifyListeners');
+    //   notifyListeners();
+    // });
+    // } on DatabaseException catch (e) {
+    //   log('Error: {$e}');
+    // }
 
     notifyListeners();
     return true;
   }
-
-  // void deleteEvent(Event event) {
-  //   _events.remove(event);
-  //   notifyListeners();
-  // }
 }

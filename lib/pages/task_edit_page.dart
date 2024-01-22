@@ -44,7 +44,6 @@ class _TaskEditPageState extends State<TaskEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    print('Testing loaded event: ${widget.task}');
     return Scaffold(
       appBar: AppBar(
         leading: CloseButton(),

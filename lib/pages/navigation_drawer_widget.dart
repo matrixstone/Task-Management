@@ -4,9 +4,13 @@ import 'package:flutter/src/widgets/placeholder.dart';
 
 class NavigationDrawerWidget extends StatefulWidget {
   final Function setCalendarView;
+  final Function setPageIndex;
   final int selectedIndex;
   const NavigationDrawerWidget(
-      {super.key, required this.setCalendarView, required this.selectedIndex});
+      {super.key,
+      required this.setCalendarView,
+      required this.setPageIndex,
+      required this.selectedIndex});
 
   @override
   State<NavigationDrawerWidget> createState() => _NavigationDrawerWidgetState();
@@ -36,6 +40,7 @@ class _NavigationDrawerWidgetState extends State<NavigationDrawerWidget> {
               // Update the state of the app
               _onItemTapped(0);
               widget.setCalendarView('day');
+              widget.setPageIndex(0);
               // Then close the drawer
               Navigator.pop(context);
             },
@@ -47,6 +52,18 @@ class _NavigationDrawerWidgetState extends State<NavigationDrawerWidget> {
               // Update the state of the app
               _onItemTapped(1);
               widget.setCalendarView('week');
+              widget.setPageIndex(0);
+              // Then close the drawer
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            title: const Text('Project'),
+            selected: _selectedIndex == 2,
+            onTap: () {
+              // Update the state of the app
+              _onItemTapped(2);
+              widget.setPageIndex(1);
               // Then close the drawer
               Navigator.pop(context);
             },

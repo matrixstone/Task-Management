@@ -1,11 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
+import 'package:task_management/model/project.dart';
 import 'package:task_management/pages/calendar_widget.dart';
+import 'package:task_management/pages/project_edit_page.dart';
 import 'package:task_management/pages/task_edit_page.dart';
 import 'package:task_management/pages/navigation_drawer_widget.dart';
+import 'package:task_management/provider/project_provider.dart';
 import 'package:task_management/provider/task_provider.dart';
-import 'package:task_management/model/task.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'dart:developer';
 
 void main() {
   databaseFactory = databaseFactoryFfiWeb;
@@ -19,6 +24,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    FlutterError.onError = (details) {
+      FlutterError.presentError(details);
+      exit(1);
+    };
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
@@ -48,6 +57,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   String currentView = 'day';
+  int pageIndex = 0; // 0: day, 0: week
 
   _setCalendarView(String view) {
     setState(() {
@@ -55,29 +65,79 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
+  _setPageIndex(int index) {
+    setState(() {
+      pageIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    log('Testing currentView: $currentView');
+
     int navigationBarIndex = 0;
     if (currentView == 'week') {
       navigationBarIndex = 1;
     }
 
-    final TaskProvider _taskProvider = TaskProvider();
+    final TaskProvider taskProvider = TaskProvider();
+    final ProjectProvider projectProvider = ProjectProvider();
 
+    List<Widget> allPages = [
+      Calendar(view: currentView, taskProvider: taskProvider),
+      ListenableBuilder(
+          listenable: projectProvider,
+          builder: (BuildContext context, Widget? child) {
+            return FutureBuilder<List<Project>>(
+                future: projectProvider.getAllProjects(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<Project>> snapshot) {
+                  List<Project> projects = List.empty();
+                  if (snapshot.hasData) {
+                    projects = snapshot.data!;
+                  }
+                  log('Testing projects after future: $projects');
+
+                  return ListView.builder(
+                    itemCount: projects.length,
+                    itemBuilder: (_, index) {
+                      return Container(
+                        // height: 50,
+                        color: Colors.amber[600],
+                        child: Center(
+                            child: Text('Project: ${projects[index].title}')),
+                      );
+                    },
+                  );
+                });
+          }),
+    ];
+
+    List<Widget> allFloatinngActions = [
+      FloatingActionButton(
+        onPressed: () => _navigateEditPage(context, taskProvider),
+        tooltip: 'Add Task',
+        child: const Icon(Icons.add),
+      ),
+      FloatingActionButton(
+        onPressed: () => _navigateProjectEditPage(context, projectProvider),
+        tooltip: 'Add Project',
+        child: const Icon(Icons.add),
+      ),
+    ];
+
+    log('Testing pageIndex: $pageIndex');
     return Scaffold(
         drawer: NavigationDrawerWidget(
             setCalendarView: _setCalendarView,
+            setPageIndex: _setPageIndex,
             selectedIndex: navigationBarIndex),
         appBar: AppBar(
           title: const Text('Task Management'),
           centerTitle: true,
         ),
-        body: Calendar(view: currentView, taskProvider: _taskProvider),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => _navigateEditPage(context, _taskProvider),
-          tooltip: 'Add Task',
-          child: const Icon(Icons.add),
-        ));
+        body: allPages[pageIndex],
+        floatingActionButton: allFloatinngActions[pageIndex]);
   }
 
   Future<void> _navigateEditPage(
@@ -87,6 +147,15 @@ class _MainPageState extends State<MainPage> {
     final result = await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => TaskEditPage(taskProvider: taskProvider),
+      ),
+    );
+  }
+
+  Future<void> _navigateProjectEditPage(
+      BuildContext context, ProjectProvider projectProvider) async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ProjectEditPage(projectProvider: projectProvider),
       ),
     );
   }
