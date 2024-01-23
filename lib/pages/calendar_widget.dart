@@ -5,6 +5,7 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:task_management/main.dart';
+import 'package:task_management/model/project.dart';
 import 'package:task_management/model/task.dart';
 import 'package:task_management/pages/task_edit_page.dart';
 import '../model/task_data_source.dart';
@@ -14,7 +15,12 @@ import '../provider/task_provider.dart';
 class Calendar extends StatelessWidget {
   final String view;
   TaskProvider taskProvider;
-  Calendar({super.key, required this.view, required this.taskProvider});
+  List<Project> projects;
+  Calendar(
+      {super.key,
+      required this.view,
+      required this.taskProvider,
+      required this.projects});
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +56,9 @@ class Calendar extends StatelessWidget {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => TaskEditPage(
-                            task: task, taskProvider: taskProvider),
+                            task: task,
+                            taskProvider: taskProvider,
+                            projects: projects),
                       ),
                     );
                   },

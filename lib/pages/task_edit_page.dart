@@ -4,6 +4,8 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
+import 'package:task_management/model/project.dart';
+import 'package:task_management/provider/project_provider.dart';
 
 import '../model/task.dart';
 import '../provider/task_provider.dart';
@@ -12,10 +14,12 @@ import '../utils.dart';
 class TaskEditPage extends StatefulWidget {
   final Task? task;
   TaskProvider taskProvider;
+  List<Project> projects;
   TaskEditPage({
     Key? key,
     this.task,
     required this.taskProvider,
+    required this.projects,
   }) : super(key: key);
 
   @override
@@ -27,6 +31,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
   TextEditingController? titleController;
   late DateTime from;
   late DateTime to;
+  String dropdownvalue = '';
 
   @override
   void initState() {
@@ -34,6 +39,13 @@ class _TaskEditPageState extends State<TaskEditPage> {
     from = widget.task?.fromDate ?? DateTime.now();
     to = widget.task?.toDate ?? DateTime.now().add(const Duration(hours: 1));
     titleController = TextEditingController(text: widget.task?.title);
+    dropdownvalue = widget.projects[0].title;
+  }
+
+  _setDropdownView(String value) {
+    setState(() {
+      dropdownvalue = value;
+    });
   }
 
   @override
@@ -57,6 +69,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               buildTitle(widget.taskProvider),
+              buildProjectDropDown(widget.projects),
               buildDateTimePickers(),
             ],
           ),
@@ -71,6 +84,19 @@ class _TaskEditPageState extends State<TaskEditPage> {
             icon: Icon(Icons.done),
             label: Text('Save'))
       ];
+
+  Widget buildProjectDropDown(List<Project> projects) {
+    return DropdownButton(
+      items: projects.map((Project project) {
+        return DropdownMenuItem(
+          value: project.title,
+          child: Text(project.title),
+        );
+      }).toList(),
+      value: dropdownvalue,
+      onChanged: (String? newValue) => _setDropdownView(newValue!),
+    );
+  }
 
   // TODO: Add TextFormField
   Widget buildTitle(TaskProvider taskProvider) => TextFormField(

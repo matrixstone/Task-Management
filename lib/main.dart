@@ -84,7 +84,23 @@ class _MainPageState extends State<MainPage> {
     final ProjectProvider projectProvider = ProjectProvider();
 
     List<Widget> allPages = [
-      Calendar(view: currentView, taskProvider: taskProvider),
+      ListenableBuilder(
+          listenable: projectProvider,
+          builder: (BuildContext context, Widget? child) {
+            return FutureBuilder<List<Project>>(
+                future: projectProvider.getAllProjects(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<Project>> snapshot) {
+                  List<Project> projects = List.empty();
+                  if (snapshot.hasData) {
+                    projects = snapshot.data!;
+                  }
+                  return Calendar(
+                      view: currentView,
+                      taskProvider: taskProvider,
+                      projects: projects);
+                });
+          }),
       ListenableBuilder(
           listenable: projectProvider,
           builder: (BuildContext context, Widget? child) {
@@ -101,12 +117,11 @@ class _MainPageState extends State<MainPage> {
                   return ListView.builder(
                     itemCount: projects.length,
                     itemBuilder: (_, index) {
-                      return Container(
-                        // height: 50,
-                        color: Colors.amber[600],
-                        child: Center(
-                            child: Text('Project: ${projects[index].title}')),
-                      );
+                      return ListTile(
+                          leading: const Icon(Icons.list),
+                          onTap: () => _navigateProjectEditPage(
+                              context, projectProvider, projects[index]),
+                          title: Text("Project: ${projects[index].title}"));
                     },
                   );
                 });
@@ -114,11 +129,25 @@ class _MainPageState extends State<MainPage> {
     ];
 
     List<Widget> allFloatinngActions = [
-      FloatingActionButton(
-        onPressed: () => _navigateEditPage(context, taskProvider),
-        tooltip: 'Add Task',
-        child: const Icon(Icons.add),
-      ),
+      ListenableBuilder(
+          listenable: projectProvider,
+          builder: (BuildContext context, Widget? child) {
+            return FutureBuilder<List<Project>>(
+                future: projectProvider.getAllProjects(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<Project>> snapshot) {
+                  List<Project> projects = List.empty();
+                  if (snapshot.hasData) {
+                    projects = snapshot.data!;
+                  }
+                  return FloatingActionButton(
+                    onPressed: () =>
+                        _navigateEditPage(context, taskProvider, projects),
+                    tooltip: 'Add Task',
+                    child: const Icon(Icons.add),
+                  );
+                });
+          }),
       FloatingActionButton(
         onPressed: () => _navigateProjectEditPage(context, projectProvider),
         tooltip: 'Add Project',
@@ -140,22 +169,25 @@ class _MainPageState extends State<MainPage> {
         floatingActionButton: allFloatinngActions[pageIndex]);
   }
 
-  Future<void> _navigateEditPage(
-      BuildContext context, TaskProvider taskProvider) async {
+  Future<void> _navigateEditPage(BuildContext context,
+      TaskProvider taskProvider, List<Project> projects) async {
     // Navigator.push returns a Future that completes after calling
     // Navigator.pop on the Selection Screen.
     final result = await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => TaskEditPage(taskProvider: taskProvider),
+        builder: (context) =>
+            TaskEditPage(taskProvider: taskProvider, projects: projects),
       ),
     );
   }
 
   Future<void> _navigateProjectEditPage(
-      BuildContext context, ProjectProvider projectProvider) async {
+      BuildContext context, ProjectProvider projectProvider,
+      [Project? project]) async {
     final result = await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => ProjectEditPage(projectProvider: projectProvider),
+        builder: (context) =>
+            ProjectEditPage(project: project, projectProvider: projectProvider),
       ),
     );
   }
