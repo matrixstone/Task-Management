@@ -53,6 +53,7 @@ class Calendar extends StatelessWidget {
                   onTap: (calendarTapDetails) {
                     if (calendarTapDetails == null) return;
                     final task = calendarTapDetails.appointments!.first;
+                    print('Testing onTap task: $task');
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => TaskEditPage(

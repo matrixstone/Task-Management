@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class Task {
   int? id;
+  int projectId;
   final String title;
   final String description;
   final DateTime fromDate;
@@ -11,6 +12,7 @@ class Task {
 
   Task({
     this.id,
+    required this.projectId,
     required this.title,
     required this.description,
     required this.fromDate,
@@ -22,6 +24,7 @@ class Task {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'projectId': projectId,
       'title': title,
       'description': description,
       'fromDate': fromDate.toIso8601String(),
@@ -33,6 +36,6 @@ class Task {
 
   @override
   String toString() {
-    return 'Task{id: $id, title: $title, description: $description, fromDate: $fromDate, toDate: $toDate, backgroundColor: $backgroundColor, isAllDay: $isAllDay}';
+    return 'Task{id: $id, projectId: $projectId, title: $title, description: $description, fromDate: $fromDate, toDate: $toDate, backgroundColor: $backgroundColor, isAllDay: $isAllDay}';
   }
 }

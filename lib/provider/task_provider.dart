@@ -24,7 +24,7 @@ class TaskProvider extends ChangeNotifier {
         version: 1,
         onCreate: (db, version) async {
           await db.execute(
-            'CREATE TABLE tasks(id INTEGER PRIMARY KEY, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER)',
+            'CREATE TABLE tasks(id INTEGER PRIMARY KEY, projectId INTEGER, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER)',
           );
           return db.execute(
             'CREATE TABLE IF NOT EXISTS projects(id INTEGER PRIMARY KEY, title TEXT, description TEXT)',
@@ -41,6 +41,7 @@ class TaskProvider extends ChangeNotifier {
     return List.generate(maps.length, (i) {
       return Task(
         id: maps[i]['id'] as int,
+        projectId: maps[i]['projectId'] as int,
         title: maps[i]['title'] as String,
         description: maps[i]['description'] as String,
         fromDate: DateTime.parse(maps[i]['fromDate'] as String),
@@ -65,7 +66,7 @@ class TaskProvider extends ChangeNotifier {
         version: 1,
         onCreate: (db, version) async {
           await db.execute(
-            'CREATE TABLE tasks(id INTEGER PRIMARY KEY, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER)',
+            'CREATE TABLE tasks(id INTEGER PRIMARY KEY, projectId INTEGER, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER)',
           );
           return db.execute(
             'CREATE TABLE IF NOT EXISTS projects(id INTEGER PRIMARY KEY, title TEXT, description TEXT)',

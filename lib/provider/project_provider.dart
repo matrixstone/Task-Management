@@ -20,7 +20,10 @@ class ProjectProvider extends ChangeNotifier {
       join(await getDatabasesPath(), 'task_management.db'),
       options: OpenDatabaseOptions(
         version: 1,
-        onCreate: (db, version) {
+        onCreate: (db, version) async {
+          await db.execute(
+            'CREATE TABLE tasks(id INTEGER PRIMARY KEY, projectId INTEGER, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER)',
+          );
           return db.execute(
             'CREATE TABLE IF NOT EXISTS projects(id INTEGER PRIMARY KEY, title TEXT, description TEXT)',
           );
@@ -55,7 +58,10 @@ class ProjectProvider extends ChangeNotifier {
       join(await getDatabasesPath(), 'task_management.db'),
       options: OpenDatabaseOptions(
         version: 1,
-        onCreate: (db, version) {
+        onCreate: (db, version) async {
+          await db.execute(
+            'CREATE TABLE tasks(id INTEGER PRIMARY KEY, projectId INTEGER, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER)',
+          );
           return db.execute(
             'CREATE TABLE IF NOT EXISTS projects(id INTEGER PRIMARY KEY, title TEXT, description TEXT)',
           );

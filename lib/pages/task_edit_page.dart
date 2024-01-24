@@ -31,7 +31,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
   TextEditingController? titleController;
   late DateTime from;
   late DateTime to;
-  String dropdownvalue = '';
+  late Project selectedProject;
 
   @override
   void initState() {
@@ -39,12 +39,16 @@ class _TaskEditPageState extends State<TaskEditPage> {
     from = widget.task?.fromDate ?? DateTime.now();
     to = widget.task?.toDate ?? DateTime.now().add(const Duration(hours: 1));
     titleController = TextEditingController(text: widget.task?.title);
-    dropdownvalue = widget.projects[0].title;
+    int selectedProjectIndex = 0;
+    if (widget.task != null) {
+      selectedProjectIndex = widget.task!.projectId - 1;
+    }
+    selectedProject = widget.projects[selectedProjectIndex];
   }
 
-  _setDropdownView(String value) {
+  _setDropdownView(Project updatedIndex) {
     setState(() {
-      dropdownvalue = value;
+      selectedProject = updatedIndex;
     });
   }
 
@@ -86,15 +90,18 @@ class _TaskEditPageState extends State<TaskEditPage> {
       ];
 
   Widget buildProjectDropDown(List<Project> projects) {
-    return DropdownButton(
+    return DropdownButton<Project>(
       items: projects.map((Project project) {
         return DropdownMenuItem(
-          value: project.title,
+          value: project,
           child: Text(project.title),
         );
       }).toList(),
-      value: dropdownvalue,
-      onChanged: (String? newValue) => _setDropdownView(newValue!),
+      // value: projects[projectDropDownIndex].title,
+      value: selectedProject,
+      onChanged: (Project? newValue) {
+        _setDropdownView(newValue!);
+      },
     );
   }
 
@@ -222,11 +229,14 @@ class _TaskEditPageState extends State<TaskEditPage> {
     if (isValid) {
       final task = Task(
         id: widget.task?.id,
+        projectId: selectedProject.id!,
         title: titleController!.text,
         description: '',
         fromDate: from,
         toDate: to,
       );
+      print('Testing selectedProject: $selectedProject');
+      print('Testing task: $task');
       await taskProvider.addTask(task).then((value) {
         Navigator.of(context).pop(task);
       });
