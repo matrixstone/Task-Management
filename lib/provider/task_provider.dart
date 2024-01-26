@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
-
+import 'package:collection/collection.dart';
 import '../model/task.dart';
 import 'dart:async';
 
@@ -18,7 +18,7 @@ class TaskProvider extends ChangeNotifier {
         version: 1,
         onCreate: (db, version) async {
           await db.execute(
-            'CREATE TABLE tasks(id INTEGER PRIMARY KEY, projectId INTEGER, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER)',
+            'CREATE TABLE tasks(id INTEGER PRIMARY KEY, projectId INTEGER, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER, status TEXT)',
           );
           return db.execute(
             'CREATE TABLE IF NOT EXISTS projects(id INTEGER PRIMARY KEY, title TEXT, description TEXT)',
@@ -46,6 +46,8 @@ class TaskProvider extends ChangeNotifier {
         toDate: DateTime.parse(maps[i]['toDate'] as String),
         backgroundColor: Color(maps[i]['backgroundColor'] as int),
         isAllDay: maps[i]['isAllDay'] == 1,
+        status: TaskStatus.values
+            .firstWhereOrNull((e) => e.name == maps[i]['status']),
       );
     });
   }

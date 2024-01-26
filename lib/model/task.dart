@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+enum TaskStatus { notStarted, inProgress, completed }
+
 class Task {
   int? id;
   int projectId;
@@ -9,6 +11,7 @@ class Task {
   final DateTime toDate;
   final Color backgroundColor;
   final bool isAllDay;
+  TaskStatus? status;
 
   Task({
     this.id,
@@ -19,6 +22,7 @@ class Task {
     required this.toDate,
     this.backgroundColor = Colors.blue,
     this.isAllDay = false,
+    this.status = TaskStatus.notStarted,
   });
 
   Map<String, dynamic> toMap() {
@@ -31,11 +35,12 @@ class Task {
       'toDate': toDate.toIso8601String(),
       'backgroundColor': backgroundColor.value,
       'isAllDay': isAllDay ? 1 : 0,
+      'status': status?.name,
     };
   }
 
   @override
   String toString() {
-    return 'Task{id: $id, projectId: $projectId, title: $title, description: $description, fromDate: $fromDate, toDate: $toDate, backgroundColor: $backgroundColor, isAllDay: $isAllDay}';
+    return 'Task{id: $id, projectId: $projectId, title: $title, description: $description, fromDate: $fromDate, toDate: $toDate, backgroundColor: $backgroundColor, isAllDay: $isAllDay, status: $status}';
   }
 }

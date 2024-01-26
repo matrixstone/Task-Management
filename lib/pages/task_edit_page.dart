@@ -32,6 +32,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
   late DateTime from;
   late DateTime to;
   late Project selectedProject;
+  late TaskStatus taskStatus;
 
   @override
   void initState() {
@@ -44,11 +45,18 @@ class _TaskEditPageState extends State<TaskEditPage> {
       selectedProjectIndex = widget.task!.projectId - 1;
     }
     selectedProject = widget.projects[selectedProjectIndex];
+    taskStatus = widget.task?.status ?? TaskStatus.notStarted;
   }
 
   _setDropdownView(Project updatedIndex) {
     setState(() {
       selectedProject = updatedIndex;
+    });
+  }
+
+  _setTaskStatus(TaskStatus status) {
+    setState(() {
+      taskStatus = status;
     });
   }
 
@@ -75,6 +83,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
               buildTitle(widget.taskProvider),
               buildProjectDropDown(widget.projects),
               buildDateTimePickers(),
+              buildStatusDropDown(),
             ],
           ),
         ),
@@ -88,6 +97,21 @@ class _TaskEditPageState extends State<TaskEditPage> {
             icon: Icon(Icons.done),
             label: Text('Save'))
       ];
+
+  Widget buildStatusDropDown() {
+    return DropdownButton<TaskStatus>(
+      items: TaskStatus.values.map((TaskStatus status) {
+        return DropdownMenuItem(
+          value: status,
+          child: Text(status.name),
+        );
+      }).toList(),
+      value: taskStatus,
+      onChanged: (TaskStatus? newValue) {
+        _setTaskStatus(newValue!);
+      },
+    );
+  }
 
   Widget buildProjectDropDown(List<Project> projects) {
     return DropdownButton<Project>(
@@ -234,6 +258,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
         description: '',
         fromDate: from,
         toDate: to,
+        status: taskStatus,
       );
       print('Testing selectedProject: $selectedProject');
       print('Testing task: $task');
