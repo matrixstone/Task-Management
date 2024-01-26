@@ -11,12 +11,10 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class ProjectProvider extends ChangeNotifier {
-  Future<List<Project>> getAllProjects() async {
-    // Update database
-    WidgetsFlutterBinding.ensureInitialized();
-
+  late Database _database;
+  Future<void> initializeDatabase() async {
     var factory = databaseFactoryFfiWeb;
-    final database = factory.openDatabase(
+    _database = await factory.openDatabase(
       join(await getDatabasesPath(), 'task_management.db'),
       options: OpenDatabaseOptions(
         version: 1,
@@ -30,11 +28,15 @@ class ProjectProvider extends ChangeNotifier {
         },
       ),
     );
+  }
 
-    // Get a reference to the database.
-    final db = await database;
+  Future<List<Project>> getAllProjects() async {
+    // Update database
+    WidgetsFlutterBinding.ensureInitialized();
 
-    final List<Map<String, dynamic>> maps = await db.query('projects');
+    await initializeDatabase();
+
+    final List<Map<String, dynamic>> maps = await _database.query('projects');
     log('Testing all projects: {$maps}');
 
     return List.generate(maps.length, (i) {
@@ -53,34 +55,14 @@ class ProjectProvider extends ChangeNotifier {
     WidgetsFlutterBinding.ensureInitialized();
     log('Testing project to add: {$project}');
 
-    var factory = databaseFactoryFfiWeb;
-    final database = factory.openDatabase(
-      join(await getDatabasesPath(), 'task_management.db'),
-      options: OpenDatabaseOptions(
-        version: 1,
-        onCreate: (db, version) async {
-          await db.execute(
-            'CREATE TABLE tasks(id INTEGER PRIMARY KEY, projectId INTEGER, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER)',
-          );
-          return db.execute(
-            'CREATE TABLE IF NOT EXISTS projects(id INTEGER PRIMARY KEY, title TEXT, description TEXT)',
-          );
-        },
-      ),
-    );
-
-    // Get a reference to the database.
-    final db = await database;
-
-    log('Testing 2222');
+    await initializeDatabase();
 
     // try {
-    int fetchRes = await db.insert(
+    int fetchRes = await _database.insert(
       'projects',
       project.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-    log('Testing project to add after insert $fetchRes');
     //     .then((value) {
     //   log('Testing notifyListeners');
     //   notifyListeners();

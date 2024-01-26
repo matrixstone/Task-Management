@@ -9,16 +9,10 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class TaskProvider extends ChangeNotifier {
-  // final List<Event> _events = [];
-
-  // List<Event> get events => _events;
-
-  Future<List<Task>> getAllTasks() async {
-    // Update database
-    WidgetsFlutterBinding.ensureInitialized();
-
+  late Database _database;
+  Future<void> initializeDatabase() async {
     var factory = databaseFactoryFfiWeb;
-    final database = factory.openDatabase(
+    _database = await factory.openDatabase(
       join(await getDatabasesPath(), 'task_management.db'),
       options: OpenDatabaseOptions(
         version: 1,
@@ -32,11 +26,15 @@ class TaskProvider extends ChangeNotifier {
         },
       ),
     );
+  }
 
-    // Get a reference to the database.
-    final db = await database;
+  Future<List<Task>> getAllTasks() async {
+    // Update database
+    WidgetsFlutterBinding.ensureInitialized();
 
-    final List<Map<String, dynamic>> maps = await db.query('tasks');
+    await initializeDatabase();
+
+    final List<Map<String, dynamic>> maps = await _database.query('tasks');
 
     return List.generate(maps.length, (i) {
       return Task(
@@ -59,26 +57,9 @@ class TaskProvider extends ChangeNotifier {
     WidgetsFlutterBinding.ensureInitialized();
     print('Testing adding task: $task');
 
-    var factory = databaseFactoryFfiWeb;
-    final database = factory.openDatabase(
-      join(await getDatabasesPath(), 'task_management.db'),
-      options: OpenDatabaseOptions(
-        version: 1,
-        onCreate: (db, version) async {
-          await db.execute(
-            'CREATE TABLE tasks(id INTEGER PRIMARY KEY, projectId INTEGER, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER)',
-          );
-          return db.execute(
-            'CREATE TABLE IF NOT EXISTS projects(id INTEGER PRIMARY KEY, title TEXT, description TEXT)',
-          );
-        },
-      ),
-    );
+    await initializeDatabase();
 
-    // Get a reference to the database.
-    final db = await database;
-
-    await db.insert(
+    await _database.insert(
       'tasks',
       task.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
