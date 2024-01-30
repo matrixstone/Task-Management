@@ -22,8 +22,11 @@ class ProjectProvider extends ChangeNotifier {
           await db.execute(
             'CREATE TABLE tasks(id INTEGER PRIMARY KEY, projectId INTEGER, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER, status TEXT)',
           );
-          return db.execute(
+          await db.execute(
             'CREATE TABLE IF NOT EXISTS projects(id INTEGER PRIMARY KEY, title TEXT, description TEXT)',
+          );
+          return db.execute(
+            'CREATE INDEX project_on_tasks_index ON tasks (projectId)',
           );
         },
       ),

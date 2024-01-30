@@ -1,0 +1,82 @@
+import 'package:flutter/cupertino.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:intl/intl.dart';
+import 'package:collection/collection.dart';
+
+import '../model/project.dart';
+
+class ChartData {
+  ChartData(this.x, this.y);
+  final String x;
+  final double y;
+  @override
+  String toString() {
+    return 'ChartData{x: $x, y: $y}';
+  }
+}
+
+class ReportPage extends StatefulWidget {
+  Map<Project, Map<DateTime, double>> projectsToTime;
+
+  ReportPage({super.key, required this.projectsToTime});
+
+  @override
+  State<ReportPage> createState() => _ReportPageState();
+}
+
+class _ReportPageState extends State<ReportPage> {
+  @override
+  Widget build(BuildContext context) {
+    var isCardView = true;
+    return SfCircularChart(
+      title: ChartTitle(
+          text: isCardView
+              ? ''
+              : 'Various countries population density and area'),
+      legend: Legend(
+          isVisible: !isCardView, overflowMode: LegendItemOverflowMode.wrap),
+      series: _getRadiusPieSeries(),
+      onTooltipRender: (TooltipArgs args) {
+        final NumberFormat format = NumberFormat.decimalPattern();
+        args.text = args.dataPoints![args.pointIndex!.toInt()].x.toString() +
+            ' : ' +
+            format.format(args.dataPoints![args.pointIndex!.toInt()].y);
+      },
+      tooltipBehavior: TooltipBehavior(enable: true),
+    );
+  }
+
+  List<PieSeries<ChartData, String>> _getRadiusPieSeries() {
+    List<ChartData> projectTime = widget.projectsToTime.entries.map((entry) {
+      double accumulativeTime = 0;
+      entry.value.forEach((date, time) {
+        accumulativeTime += time;
+      });
+      // return MapEntry(project, accumulativeTime);
+      return ChartData(entry.key.title, accumulativeTime);
+    }).toList();
+
+    print('Testing loading projectsToTime argument: ${widget.projectsToTime}');
+    print('Testing loading projectsToTime: ${projectTime}');
+    return <PieSeries<ChartData, String>>[
+      PieSeries<ChartData, String>(
+          // dataSource: <ChartData>[
+          //   ChartData(
+          //     'Argentina',
+          //     505370,
+          //   ),
+          //   ChartData('Belgium', 551500),
+          //   ChartData('Cuba', 312685),
+          // ],
+          dataSource: projectTime,
+          xValueMapper: (ChartData data, _) => data.x as String,
+          yValueMapper: (ChartData data, _) => data.y,
+          dataLabelMapper: (ChartData data, _) => data.x as String,
+          startAngle: 100,
+          endAngle: 100,
+          // pointRadiusMapper: (ChartData data, _) => data.text,
+          dataLabelSettings: const DataLabelSettings(
+              isVisible: true, labelPosition: ChartDataLabelPosition.outside))
+    ];
+  }
+}

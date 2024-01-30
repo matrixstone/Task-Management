@@ -46,6 +46,7 @@ dependencies:
   riverpod_annotation: ^2.3.3
   sqflite_common_ffi: ^2.2.5
   sqflite_common_ffi_web: ^0.4.2+3
+  syncfusion_flutter_charts: ^24.1.47
 
 dev_dependencies:
   flutter_test:

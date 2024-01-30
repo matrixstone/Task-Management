@@ -68,6 +68,17 @@ class _NavigationDrawerWidgetState extends State<NavigationDrawerWidget> {
               Navigator.pop(context);
             },
           ),
+          ListTile(
+            title: const Text('Report'),
+            selected: _selectedIndex == 3,
+            onTap: () {
+              // Update the state of the app
+              _onItemTapped(3);
+              widget.setPageIndex(2);
+              // Then close the drawer
+              Navigator.pop(context);
+            },
+          ),
         ],
       )),
     );

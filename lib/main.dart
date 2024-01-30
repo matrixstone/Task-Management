@@ -5,8 +5,10 @@ import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:task_management/model/project.dart';
 import 'package:task_management/pages/calendar_widget.dart';
 import 'package:task_management/pages/project_edit_page.dart';
+import 'package:task_management/pages/report_page.dart';
 import 'package:task_management/pages/task_edit_page.dart';
 import 'package:task_management/pages/navigation_drawer_widget.dart';
+import 'package:task_management/provider/data_provider.dart';
 import 'package:task_management/provider/project_provider.dart';
 import 'package:task_management/provider/task_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -82,8 +84,11 @@ class _MainPageState extends State<MainPage> {
 
     final TaskProvider taskProvider = TaskProvider();
     final ProjectProvider projectProvider = ProjectProvider();
+    final DataProvider dataProvider = DataProvider();
 
     List<Widget> allPages = [
+      // The first and 2nd pages are Calendar pages.
+      // First page is Day, 2nd page is Week.
       ListenableBuilder(
           listenable: projectProvider,
           builder: (BuildContext context, Widget? child) {
@@ -101,6 +106,7 @@ class _MainPageState extends State<MainPage> {
                       projects: projects);
                 });
           }),
+      // 3rd page is project management.
       ListenableBuilder(
           listenable: projectProvider,
           builder: (BuildContext context, Widget? child) {
@@ -124,6 +130,27 @@ class _MainPageState extends State<MainPage> {
                           title: Text("Project: ${projects[index].title}"));
                     },
                   );
+                });
+          }),
+      ListenableBuilder(
+          listenable: taskProvider,
+          builder: (BuildContext context, Widget? child) {
+            return ListenableBuilder(
+                listenable: projectProvider,
+                builder: (BuildContext context, Widget? child) {
+                  return FutureBuilder<Map<Project, Map<DateTime, double>>>(
+                      future: dataProvider.getProjectsToTime(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<Map<Project, Map<DateTime, double>>>
+                              snapshot) {
+                        Map<Project, Map<DateTime, double>> projectsToTime = {};
+                        if (snapshot.hasData) {
+                          projectsToTime = snapshot.data!;
+                        }
+                        log('Testing projectsToTime after future: $projectsToTime');
+
+                        return ReportPage(projectsToTime: projectsToTime);
+                      });
                 });
           }),
     ];
@@ -154,9 +181,8 @@ class _MainPageState extends State<MainPage> {
         child: const Icon(Icons.add),
       ),
     ];
-
-    log('Testing pageIndex: $pageIndex');
-    return Scaffold(
+    if (pageIndex < 2) {
+      return Scaffold(
         drawer: NavigationDrawerWidget(
             setCalendarView: _setCalendarView,
             setPageIndex: _setPageIndex,
@@ -166,7 +192,21 @@ class _MainPageState extends State<MainPage> {
           centerTitle: true,
         ),
         body: allPages[pageIndex],
-        floatingActionButton: allFloatinngActions[pageIndex]);
+        floatingActionButton: allFloatinngActions[pageIndex],
+      );
+    } else {
+      return Scaffold(
+        drawer: NavigationDrawerWidget(
+            setCalendarView: _setCalendarView,
+            setPageIndex: _setPageIndex,
+            selectedIndex: navigationBarIndex),
+        appBar: AppBar(
+          title: const Text('Task Management'),
+          centerTitle: true,
+        ),
+        body: allPages[pageIndex],
+      );
+    }
   }
 
   Future<void> _navigateEditPage(BuildContext context,
@@ -191,4 +231,12 @@ class _MainPageState extends State<MainPage> {
       ),
     );
   }
+
+  // Future<void> _navigateReportPage(BuildContext context) async {
+  //   Navigator.of(context).push(
+  //     MaterialPageRoute(
+  //       builder: (context) => ReportPage(),
+  //     ),
+  //   );
+  // }
 }
