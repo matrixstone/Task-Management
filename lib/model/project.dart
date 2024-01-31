@@ -21,4 +21,8 @@ class Project {
   String toString() {
     return 'Task{id: $id, title: $title, description: $description, }';
   }
+
+  bool operator ==(Object other) => other is Project && id == other.id;
+
+  int get hashCode => Object.hash(id, id);
 }

@@ -28,22 +28,72 @@ class _ReportPageState extends State<ReportPage> {
   @override
   Widget build(BuildContext context) {
     var isCardView = true;
-    return SfCircularChart(
-      title: ChartTitle(
-          text: isCardView
-              ? ''
-              : 'Various countries population density and area'),
-      legend: Legend(
-          isVisible: !isCardView, overflowMode: LegendItemOverflowMode.wrap),
-      series: _getRadiusPieSeries(),
-      onTooltipRender: (TooltipArgs args) {
-        final NumberFormat format = NumberFormat.decimalPattern();
-        args.text = args.dataPoints![args.pointIndex!.toInt()].x.toString() +
-            ' : ' +
-            format.format(args.dataPoints![args.pointIndex!.toInt()].y);
-      },
-      tooltipBehavior: TooltipBehavior(enable: true),
+    return ListView(
+      children: [
+        SfCartesianChart(
+            // Initialize category axis
+            primaryXAxis: CategoryAxis(),
+            // primaryYAxis: NumericAxis(),
+            legend: const Legend(isVisible: true),
+            series:
+                // Initialize line series
+                _getCartesianChartData()),
+        SfCircularChart(
+          title: ChartTitle(
+              text: isCardView
+                  ? ''
+                  : 'Various countries population density and area'),
+          legend: Legend(
+              isVisible: !isCardView,
+              overflowMode: LegendItemOverflowMode.wrap),
+          series: _getRadiusPieSeries(),
+          onTooltipRender: (TooltipArgs args) {
+            final NumberFormat format = NumberFormat.decimalPattern();
+            args.text =
+                args.dataPoints![args.pointIndex!.toInt()].x.toString() +
+                    ' : ' +
+                    format.format(args.dataPoints![args.pointIndex!.toInt()].y);
+          },
+          tooltipBehavior: TooltipBehavior(enable: true),
+        )
+      ],
     );
+  }
+
+  // LineSeries<ChartData, String> _getCartesianChartData() {
+  List<CartesianSeries> _getCartesianChartData() {
+    List<CartesianSeries> series = <CartesianSeries>[];
+    widget.projectsToTime.forEach((project, value) {
+      List<ChartData> dateAndSpendTime = value.entries.map((entry) {
+        print('entry.key: ${entry.key}');
+        print('entry.value: ${entry.value}');
+        return ChartData(
+            DateFormat('yyyy-MM-dd').format(entry.key), entry.value);
+      }).toList();
+      series.add(LineSeries<ChartData, String>(
+          dataSource: dateAndSpendTime,
+          xValueMapper: (ChartData data, _) => data.x,
+          yValueMapper: (ChartData data, _) => data.y,
+          dataLabelSettings: const DataLabelSettings(isVisible: true),
+          isVisibleInLegend: true,
+          name: project.title));
+    });
+    return series;
+
+    // return LineSeries<ChartData, String>(
+    //     dataSource: [
+    //       // Bind data source
+    //       ChartData('2024-01-06', 35),
+    //       ChartData('2024-01-07', 28),
+    //       ChartData('2024-01-08', 34),
+    //       ChartData('2024-01-09', 32),
+    //       ChartData('2024-01-10', 40)
+    //     ],
+    //     xValueMapper: (ChartData data, _) => data.x,
+    //     yValueMapper: (ChartData data, _) => data.y,
+    //     dataLabelSettings: const DataLabelSettings(isVisible: true),
+    //     isVisibleInLegend: true,
+    //     name: 'Series 1');
   }
 
   List<PieSeries<ChartData, String>> _getRadiusPieSeries() {
