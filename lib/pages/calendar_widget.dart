@@ -1,10 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'package:task_management/main.dart';
 import 'package:task_management/model/project.dart';
 import 'package:task_management/model/task.dart';
 import 'package:task_management/pages/task_edit_page.dart';
@@ -51,7 +48,6 @@ class Calendar extends StatelessWidget {
                   allowAppointmentResize: true,
                   onAppointmentResizeEnd: resizeEnd,
                   onTap: (calendarTapDetails) {
-                    if (calendarTapDetails == null) return;
                     final task = calendarTapDetails.appointments!.first;
                     print('Testing onTap task: $task');
                     Navigator.of(context).push(
@@ -70,9 +66,9 @@ class Calendar extends StatelessWidget {
 
   // TODO: Update event after resizing
   void resizeEnd(AppointmentResizeEndDetails appointmentResizeEndDetails) {
-    dynamic appointment = appointmentResizeEndDetails.appointment;
-    DateTime? startTime = appointmentResizeEndDetails.startTime;
-    DateTime? endTime = appointmentResizeEndDetails.endTime;
-    CalendarResource? resourceDetails = appointmentResizeEndDetails.resource;
+    // dynamic appointment = appointmentResizeEndDetails.appointment;
+    // DateTime? startTime = appointmentResizeEndDetails.startTime;
+    // DateTime? endTime = appointmentResizeEndDetails.endTime;
+    // CalendarResource? resourceDetails = appointmentResizeEndDetails.resource;
   }
 }

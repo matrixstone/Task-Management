@@ -213,7 +213,7 @@ class _MainPageState extends State<MainPage> {
       TaskProvider taskProvider, List<Project> projects) async {
     // Navigator.push returns a Future that completes after calling
     // Navigator.pop on the Selection Screen.
-    final result = await Navigator.of(context).push(
+    await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) =>
             TaskEditPage(taskProvider: taskProvider, projects: projects),
@@ -224,7 +224,7 @@ class _MainPageState extends State<MainPage> {
   Future<void> _navigateProjectEditPage(
       BuildContext context, ProjectProvider projectProvider,
       [Project? project]) async {
-    final result = await Navigator.of(context).push(
+    await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) =>
             ProjectEditPage(project: project, projectProvider: projectProvider),
