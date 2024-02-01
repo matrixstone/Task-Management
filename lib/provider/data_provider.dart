@@ -8,11 +8,14 @@ import 'package:sqflite/sqflite.dart';
 import 'package:collection/collection.dart';
 import 'dart:developer' as developer;
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:flutter/foundation.dart';
 
 class DataProvider extends ChangeNotifier {
   late Database _database;
   Future<void> initializeDatabase() async {
-    var factory = databaseFactoryFfiWeb;
+    var factory = databaseFactory;
+
     _database = await factory.openDatabase(
       join(await getDatabasesPath(), 'task_management.db'),
       options: OpenDatabaseOptions(

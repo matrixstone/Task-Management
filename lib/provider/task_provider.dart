@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:collection/collection.dart';
 import '../model/task.dart';
@@ -7,11 +8,13 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:flutter/foundation.dart';
 
 class TaskProvider extends ChangeNotifier {
   late Database _database;
   Future<void> initializeDatabase() async {
-    var factory = databaseFactoryFfiWeb;
+    var factory = databaseFactory;
+
     _database = await factory.openDatabase(
       join(await getDatabasesPath(), 'task_management.db'),
       options: OpenDatabaseOptions(

@@ -13,9 +13,32 @@ import 'package:task_management/provider/project_provider.dart';
 import 'package:task_management/provider/task_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'dart:developer';
+import 'package:flutter/foundation.dart';
+import 'package:sqflite/sqflite.dart' as sqflite show databaseFactory;
 
 void main() {
-  databaseFactory = databaseFactoryFfiWeb;
+  // if (Platform.isWindows || Platform.isLinux) {
+  //   // Initialize FFI
+  //   sqfliteFfiInit();
+  // }
+  // platformInit();
+  if (!kIsWeb) {
+    sqfliteFfiInit();
+  }
+  // bool isIOS = !kIsWeb && Platform.isIOS;
+  // bool isWeb = kIsWeb;
+  // print('platform: $isWeb, $isIOS');
+
+  // Change the default factory. On iOS/Android, if not using `sqlite_flutter_lib` you can forget
+  // this step, it will use the sqlite version available on the system.
+  // sqfliteFfiInit();
+  if (kIsWeb) {
+    databaseFactory = databaseFactoryFfiWeb;
+  } else {
+    databaseFactory = sqflite.databaseFactory;
+  }
+
+  // databaseFactory = databaseFactoryFfiWeb;
 
   runApp(const MyApp());
 }
