@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/cupertino.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
@@ -64,12 +66,18 @@ class _ReportPageState extends State<ReportPage> {
   List<CartesianSeries> _getCartesianChartData() {
     List<CartesianSeries> series = <CartesianSeries>[];
     widget.projectsToTime.forEach((project, value) {
-      List<ChartData> dateAndSpendTime = value.entries.map((entry) {
-        print('entry.key: ${entry.key}');
-        print('entry.value: ${entry.value}');
-        return ChartData(
-            DateFormat('yyyy-MM-dd').format(entry.key), entry.value);
-      }).toList();
+      Map<String, double> dateTimeMap = {};
+      value.entries.forEach((entry) {
+        String dateKey = DateFormat('yyyy-MM-dd').format(entry.key);
+        if (dateTimeMap.containsKey(dateKey)) {
+          dateTimeMap[dateKey] = dateTimeMap[dateKey]! + entry.value;
+        } else {
+          dateTimeMap[dateKey] = entry.value;
+        }
+      });
+      List<ChartData> dateAndSpendTime =
+          dateTimeMap.entries.map((e) => ChartData(e.key, e.value)).toList();
+      dateAndSpendTime.sort((a, b) => a.x.compareTo(b.x));
       series.add(LineSeries<ChartData, String>(
           dataSource: dateAndSpendTime,
           xValueMapper: (ChartData data, _) => data.x,
