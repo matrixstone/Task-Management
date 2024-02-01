@@ -64,7 +64,6 @@ JOIN projects ON tasks.projectId = projects.id
       projectToTime[project]![tasktoDate] =
           tasktoDate.difference(taskFromDate).inHours.toDouble();
     });
-    print('Testing this is this is : $projectToTime');
     return projectToTime;
   }
 

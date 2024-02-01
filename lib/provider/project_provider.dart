@@ -43,7 +43,6 @@ class ProjectProvider extends ChangeNotifier {
     await initializeDatabase();
 
     final List<Map<String, dynamic>> maps = await _database.query('projects');
-    log('Testing all projects: {$maps}');
 
     return List.generate(maps.length, (i) {
       return Project(
@@ -59,7 +58,6 @@ class ProjectProvider extends ChangeNotifier {
 
     // Update database
     WidgetsFlutterBinding.ensureInitialized();
-    log('Testing project to add: {$project}');
 
     await initializeDatabase();
 
@@ -70,7 +68,6 @@ class ProjectProvider extends ChangeNotifier {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
     //     .then((value) {
-    //   log('Testing notifyListeners');
     //   notifyListeners();
     // });
     // } on DatabaseException catch (e) {

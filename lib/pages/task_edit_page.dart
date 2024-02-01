@@ -260,12 +260,9 @@ class _TaskEditPageState extends State<TaskEditPage> {
         toDate: to,
         status: taskStatus,
       );
-      print('Testing selectedProject: $selectedProject');
-      print('Testing task: $task');
       await taskProvider.addTask(task).then((value) {
         Navigator.of(context).pop(task);
       });
-      // print('Testing addEventResult not complete222');
       // // Navigator.of(context).pop(event);
       // if (addEventResult) {
 

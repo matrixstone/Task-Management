@@ -98,8 +98,6 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    log('Testing currentView: $currentView');
-
     int navigationBarIndex = 0;
     if (currentView == 'week') {
       navigationBarIndex = 1;
@@ -141,7 +139,6 @@ class _MainPageState extends State<MainPage> {
                   if (snapshot.hasData) {
                     projects = snapshot.data!;
                   }
-                  log('Testing projects after future: $projects');
 
                   return ListView.builder(
                     itemCount: projects.length,
@@ -170,7 +167,6 @@ class _MainPageState extends State<MainPage> {
                         if (snapshot.hasData) {
                           projectsToTime = snapshot.data!;
                         }
-                        log('Testing projectsToTime after future: $projectsToTime');
 
                         return ReportPage(projectsToTime: projectsToTime);
                       });

@@ -63,7 +63,6 @@ class TaskProvider extends ChangeNotifier {
 
     // Update database
     WidgetsFlutterBinding.ensureInitialized();
-    print('Testing adding task: $task');
 
     await initializeDatabase();
 

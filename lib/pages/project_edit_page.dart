@@ -84,9 +84,7 @@ class _ProjectEditPageState extends State<ProjectEditPage> {
         title: titleController!.text,
         description: '',
       );
-      log('Testing saveForm $project');
       await projectProvider.addProject(project).then((value) {
-        log('Testing after add then $value');
         Navigator.of(context).pop(project);
       });
     }

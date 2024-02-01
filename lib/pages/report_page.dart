@@ -114,8 +114,6 @@ class _ReportPageState extends State<ReportPage> {
       return ChartData(entry.key.title, accumulativeTime);
     }).toList();
 
-    print('Testing loading projectsToTime argument: ${widget.projectsToTime}');
-    print('Testing loading projectsToTime: ${projectTime}');
     return <PieSeries<ChartData, String>>[
       PieSeries<ChartData, String>(
           // dataSource: <ChartData>[
