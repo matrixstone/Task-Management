@@ -46,9 +46,22 @@ class Calendar extends StatelessWidget {
                   showNavigationArrow: true,
                   allowDragAndDrop: true,
                   allowAppointmentResize: true,
-                  onAppointmentResizeEnd: resizeEnd,
+                  // onAppointmentResizeEnd: resizeEnd,
                   onTap: (calendarTapDetails) {
-                    final task = calendarTapDetails.appointments!.first;
+                    Task task;
+                    if (calendarTapDetails.appointments == null ||
+                        calendarTapDetails.appointments!.isEmpty) {
+                      task = Task(
+                        projectId: 1, // default starting from the first project
+                        title: '',
+                        description: '',
+                        fromDate: calendarTapDetails.date!,
+                        toDate: calendarTapDetails.date!
+                            .add(const Duration(hours: 1)),
+                      );
+                    } else {
+                      task = calendarTapDetails.appointments!.first;
+                    }
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => TaskEditPage(
