@@ -12,7 +12,6 @@ import 'package:task_management/provider/data_provider.dart';
 import 'package:task_management/provider/project_provider.dart';
 import 'package:task_management/provider/task_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart' as sqflite show databaseFactory;
 

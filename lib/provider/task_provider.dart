@@ -76,6 +76,22 @@ class TaskProvider extends ChangeNotifier {
     return true;
   }
 
+  Future<bool> updateTaskTime(
+      int? task_id, DateTime fromTime, DateTime toTime) async {
+    WidgetsFlutterBinding.ensureInitialized();
+
+    await initializeDatabase();
+
+    int updateCount = await _database.rawUpdate('''
+    UPDATE tasks 
+    SET fromDate = ?, toDate = ? 
+    WHERE id = ?
+    ''', [fromTime.toIso8601String(), toTime.toIso8601String(), task_id]);
+
+    notifyListeners();
+    return true;
+  }
+
   // void deleteEvent(Event event) {
   //   _events.remove(event);
   //   notifyListeners();

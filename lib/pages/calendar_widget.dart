@@ -44,9 +44,10 @@ class Calendar extends StatelessWidget {
                   view: calendarView,
                   dataSource: TaskDataSource(tasks),
                   showNavigationArrow: true,
-                  allowDragAndDrop: true,
                   allowAppointmentResize: true,
-                  // onAppointmentResizeEnd: resizeEnd,
+                  onAppointmentResizeEnd: resizeEnd,
+                  allowDragAndDrop: true,
+                  onDragEnd: dragEnd,
                   onTap: (calendarTapDetails) {
                     Task task;
                     if (calendarTapDetails.appointments == null ||
@@ -76,11 +77,15 @@ class Calendar extends StatelessWidget {
         });
   }
 
-  // TODO: Update event after resizing
   void resizeEnd(AppointmentResizeEndDetails appointmentResizeEndDetails) {
-    // dynamic appointment = appointmentResizeEndDetails.appointment;
-    // DateTime? startTime = appointmentResizeEndDetails.startTime;
-    // DateTime? endTime = appointmentResizeEndDetails.endTime;
-    // CalendarResource? resourceDetails = appointmentResizeEndDetails.resource;
+    Task updatedTask = appointmentResizeEndDetails.appointment as Task;
+    taskProvider.updateTaskTime(
+        updatedTask.id, updatedTask.fromDate, updatedTask.toDate);
+  }
+
+  void dragEnd(AppointmentDragEndDetails appointmentDragEndDetails) {
+    Task updatedTask = appointmentDragEndDetails.appointment as Task;
+    taskProvider.updateTaskTime(
+        updatedTask.id, updatedTask.fromDate, updatedTask.toDate);
   }
 }

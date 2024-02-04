@@ -51,7 +51,6 @@ JOIN projects ON tasks.projectId = projects.id
     Map<Project, Map<DateTime, double>> projectToTime = {};
 
     maps.forEach((task) {
-      int projectId = task['projectId'] as int;
       Project project = Project(
           id: task['projectId'] as int,
           title: task['projectTitle'] as String,
@@ -61,8 +60,9 @@ JOIN projects ON tasks.projectId = projects.id
       }
       DateTime taskFromDate = DateTime.parse(task['fromDate'] as String);
       DateTime tasktoDate = DateTime.parse(task['toDate'] as String);
+      Duration duration = tasktoDate.difference(taskFromDate);
       projectToTime[project]![tasktoDate] =
-          tasktoDate.difference(taskFromDate).inHours.toDouble();
+          duration.inHours.toDouble() + (duration.inMinutes % 60) / 60;
     });
     return projectToTime;
   }

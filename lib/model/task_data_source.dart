@@ -1,7 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:task_management/model/task.dart';
 
-class TaskDataSource extends CalendarDataSource {
+class TaskDataSource extends CalendarDataSource<Task> {
   TaskDataSource(List<Task> appointments) {
     this.appointments = appointments;
   }
@@ -21,6 +22,11 @@ class TaskDataSource extends CalendarDataSource {
   }
 
   @override
+  Object? getId(int index) {
+    return appointments![index].id;
+  }
+
+  @override
   String getSubject(int index) {
     return appointments![index].title;
   }
@@ -28,5 +34,20 @@ class TaskDataSource extends CalendarDataSource {
   @override
   bool isAllDay(int index) {
     return appointments![index].isAllDay;
+  }
+
+  @override
+  Task? convertAppointmentToObject(Task? customData, Appointment appointment) {
+    // TODO: implement convertAppointmentToObject
+    return Task(
+      projectId: 1,
+      description: '',
+      fromDate: appointment.startTime,
+      toDate: appointment.endTime,
+      backgroundColor: appointment.color,
+      title: appointment.subject,
+      isAllDay: appointment.isAllDay,
+      id: appointment.id as int,
+    );
   }
 }
