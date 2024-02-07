@@ -16,21 +16,9 @@ import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart' as sqflite show databaseFactory;
 
 void main() {
-  // if (Platform.isWindows || Platform.isLinux) {
-  //   // Initialize FFI
-  //   sqfliteFfiInit();
-  // }
-  // platformInit();
   if (!kIsWeb) {
     sqfliteFfiInit();
   }
-  // bool isIOS = !kIsWeb && Platform.isIOS;
-  // bool isWeb = kIsWeb;
-  // print('platform: $isWeb, $isIOS');
-
-  // Change the default factory. On iOS/Android, if not using `sqlite_flutter_lib` you can forget
-  // this step, it will use the sqlite version available on the system.
-  // sqfliteFfiInit();
   if (kIsWeb) {
     databaseFactory = databaseFactoryFfiWeb;
   } else {
@@ -199,18 +187,21 @@ class _MainPageState extends State<MainPage> {
         child: const Icon(Icons.add),
       ),
     ];
+
     if (pageIndex < 2) {
       return Scaffold(
-        drawer: NavigationDrawerWidget(
-            setCalendarView: _setCalendarView,
-            setPageIndex: _setPageIndex,
-            selectedIndex: navigationBarIndex),
+        // drawer: NavigationDrawerWidget(
+        //     setCalendarView: _setCalendarView,
+        //     setPageIndex: _setPageIndex,
+        //     selectedIndex: navigationBarIndex),
         appBar: AppBar(
           title: const Text('Task Management'),
           centerTitle: true,
         ),
         body: allPages[pageIndex],
         floatingActionButton: allFloatinngActions[pageIndex],
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: _managementBottomAppBar(),
       );
     } else {
       return Scaffold(
@@ -222,9 +213,46 @@ class _MainPageState extends State<MainPage> {
           title: const Text('Task Management'),
           centerTitle: true,
         ),
-        body: allPages[pageIndex],
+        body: SafeArea(child: allPages[pageIndex]),
+        bottomNavigationBar: _managementBottomAppBar(),
       );
     }
+  }
+
+  BottomAppBar _managementBottomAppBar() {
+    return BottomAppBar(
+      shape: const CircularNotchedRectangle(),
+      color: const Color.fromRGBO(243, 248, 253, 255),
+      child: IconTheme(
+        data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            IconButton(
+              tooltip: 'Show calendar schedule',
+              icon: const Icon(Icons.calendar_month_rounded),
+              onPressed: () {
+                _setPageIndex(0);
+              },
+            ),
+            IconButton(
+              tooltip: 'Manage projects',
+              icon: const Icon(Icons.create_new_folder_rounded),
+              onPressed: () {
+                _setPageIndex(1);
+              },
+            ),
+            IconButton(
+              tooltip: 'Dashboard of accomplishment',
+              icon: const Icon(Icons.dashboard),
+              onPressed: () {
+                _setPageIndex(2);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> _navigateEditPage(BuildContext context,
