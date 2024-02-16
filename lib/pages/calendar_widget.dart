@@ -47,6 +47,7 @@ class Calendar extends StatelessWidget {
                   allowAppointmentResize: true,
                   onAppointmentResizeEnd: resizeEnd,
                   allowDragAndDrop: true,
+                  backgroundColor: Colors.white,
                   onDragEnd: dragEnd,
                   onTap: (calendarTapDetails) {
                     Task task;

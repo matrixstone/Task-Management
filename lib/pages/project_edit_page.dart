@@ -37,11 +37,11 @@ class _ProjectEditPageState extends State<ProjectEditPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: CloseButton(),
+        leading: const CloseButton(),
         actions: buildEditingActions(widget.projectProvider),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(12),
+        padding: const EdgeInsets.all(12),
         child: Form(
           key: _formKey,
           child: Column(
