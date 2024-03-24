@@ -15,8 +15,10 @@ class ChartData {
   }
 }
 
+// Shows projects analytics information.
 class ReportPage extends StatefulWidget {
   Map<Project, Map<DateTime, double>> projectsToTime;
+  int viewLastXDays = 7;
 
   ReportPage({super.key, required this.projectsToTime});
 
@@ -30,14 +32,16 @@ class _ReportPageState extends State<ReportPage> {
     var isCardView = true;
     return ListView(
       children: [
+        // Shows timeseries chart of how many hours spent on each project in last 7 days.
         SfCartesianChart(
             // Initialize category axis
-            primaryXAxis: CategoryAxis(),
+            primaryXAxis: const CategoryAxis(),
             // primaryYAxis: NumericAxis(),
             legend: const Legend(isVisible: true),
             series:
                 // Initialize line series
-                _getCartesianChartData()),
+                _getTimeseriesCartesianChartData()),
+        // Shows pie chart of how many hours spent on each project in total
         SfCircularChart(
           title: ChartTitle(
               text: isCardView
@@ -60,19 +64,46 @@ class _ReportPageState extends State<ReportPage> {
     );
   }
 
-  // LineSeries<ChartData, String> _getCartesianChartData() {
-  List<CartesianSeries> _getCartesianChartData() {
+  List<CartesianSeries> _getTimeseriesCartesianChartData() {
     List<CartesianSeries> series = <CartesianSeries>[];
     widget.projectsToTime.forEach((project, value) {
+      // For each project, sum up the time spent on each day into dateTimeMap.
       Map<String, double> dateTimeMap = {};
-      value.entries.forEach((entry) {
+      // Initialize dateTimeMap
+      DateTime datePointer = DateTime.now().add(const Duration(days: 1));
+      for (int i = 0; i < widget.viewLastXDays; i++) {
+        datePointer = datePointer.subtract(const Duration(days: 1));
+        String dateKey = DateFormat('yyyy-MM-dd').format(datePointer);
+        dateTimeMap[dateKey] = 0;
+      }
+
+      // Set start date
+      DateTime startDate =
+          DateTime.now().subtract(Duration(days: widget.viewLastXDays));
+      DateTime startDateOnlyFormat =
+          DateTime(startDate.year, startDate.month, startDate.day);
+      for (MapEntry<DateTime, double> entry in value.entries) {
+        if (entry.key.isBefore(startDateOnlyFormat)) {
+          continue;
+        }
         String dateKey = DateFormat('yyyy-MM-dd').format(entry.key);
         if (dateTimeMap.containsKey(dateKey)) {
           dateTimeMap[dateKey] = dateTimeMap[dateKey]! + entry.value;
         } else {
           dateTimeMap[dateKey] = entry.value;
         }
-      });
+      }
+      // value.entries.forEach((entry) {
+      //   if (entry.key.isBefore(startDateOnlyFormat)) {
+      //     continue;
+      //   }
+      //   String dateKey = DateFormat('yyyy-MM-dd').format(entry.key);
+      //   if (dateTimeMap.containsKey(dateKey)) {
+      //     dateTimeMap[dateKey] = dateTimeMap[dateKey]! + entry.value;
+      //   } else {
+      //     dateTimeMap[dateKey] = entry.value;
+      //   }
+      // });
       List<ChartData> dateAndSpendTime =
           dateTimeMap.entries.map((e) => ChartData(e.key, e.value)).toList();
       dateAndSpendTime.sort((a, b) => a.x.compareTo(b.x));
