@@ -49,7 +49,8 @@ class MyApp extends StatelessWidget {
         primaryColor: Colors.white,
         appBarTheme: const AppBarTheme(backgroundColor: Colors.white),
         bottomAppBarTheme: const BottomAppBarTheme(
-            color: Color.fromRGBO(241, 241, 241, 0.004)),
+            // color: Color.fromRGBO(241, 241, 241, 0.004)),
+            color: Colors.white),
         textTheme: GoogleFonts.robotoTextTheme(
           Theme.of(context).textTheme,
         ),
@@ -212,6 +213,7 @@ class _MainPageState extends State<MainPage> {
         appBar: AppBar(
           title: const Text('Task Management'),
           centerTitle: true,
+          scrolledUnderElevation: 0,
         ),
         body: SafeArea(child: allPages[pageIndex]),
         bottomNavigationBar: _managementBottomAppBar(),
@@ -223,7 +225,7 @@ class _MainPageState extends State<MainPage> {
     return BottomAppBar(
       shape: const CircularNotchedRectangle(),
       padding: const EdgeInsets.only(top: 15.0),
-      color: Theme.of(context).bottomAppBarTheme.color,
+      // color: Theme.of(context).bottomAppBarTheme.color,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[

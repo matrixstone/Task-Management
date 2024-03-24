@@ -49,6 +49,15 @@ class Calendar extends StatelessWidget {
                   allowDragAndDrop: true,
                   backgroundColor: Colors.white,
                   onDragEnd: dragEnd,
+                  showDatePickerButton: true,
+                  showTodayButton: true,
+                  allowViewNavigation: true,
+                  allowedViews: const <CalendarView>[
+                    CalendarView.day,
+                    CalendarView.week,
+                    CalendarView.month,
+                    CalendarView.schedule
+                  ],
                   onTap: (calendarTapDetails) {
                     Task task;
                     if (calendarTapDetails.appointments == null ||
@@ -64,14 +73,29 @@ class Calendar extends StatelessWidget {
                     } else {
                       task = calendarTapDetails.appointments!.first;
                     }
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => TaskEditPage(
-                            task: task,
-                            taskProvider: taskProvider,
-                            projects: projects),
-                      ),
-                    );
+                    if (projects.isEmpty) {
+                      // We have to have a project defined before creating tasks.
+                      // If there is no project, show alert page.
+                      // Navigator.of(context).push(
+                      //   MaterialPageRoute(
+                      //       builder: (context) => const AlertDialog(
+                      //           title: Text('Create projects firstly.'))),
+                      // );
+                      showDialog(
+                          context: context,
+                          builder: (context) => const AlertDialog(
+                              title: Text('Create projects firstly.')));
+                    } else {
+                      // Trigger task edit or create page if projects is not empty.
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => TaskEditPage(
+                              task: task,
+                              taskProvider: taskProvider,
+                              projects: projects),
+                        ),
+                      );
+                    }
                   },
                 );
               });
