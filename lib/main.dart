@@ -223,6 +223,8 @@ class _MainPageState extends State<MainPage> {
 
   BottomAppBar _managementBottomAppBar() {
     return BottomAppBar(
+      // surfaceTintColor defines the color after elevation is applied.
+      surfaceTintColor: Colors.white,
       shape: const CircularNotchedRectangle(),
       padding: const EdgeInsets.only(top: 15.0),
       // color: Theme.of(context).bottomAppBarTheme.color,
