@@ -83,6 +83,7 @@ class _ProjectEditPageState extends State<ProjectEditPage> {
         id: widget.project?.id,
         title: titleController!.text,
         description: '',
+        color: Colors.blue,
       );
       await projectProvider.addProject(project).then((value) {
         Navigator.of(context).pop(project);

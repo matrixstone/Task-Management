@@ -10,6 +10,7 @@ import 'dart:developer' as developer;
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 class DataProvider extends ChangeNotifier {
   late Database _database;
@@ -54,7 +55,8 @@ JOIN projects ON tasks.projectId = projects.id
       Project project = Project(
           id: task['projectId'] as int,
           title: task['projectTitle'] as String,
-          description: task['projectDescription'] as String);
+          description: task['projectDescription'] as String,
+          color: Colors.blue);
       if (!projectToTime.containsKey(project)) {
         projectToTime[project] = {};
       }
@@ -87,6 +89,7 @@ JOIN projects ON tasks.projectId = projects.id
       id: maps[0]['id'] as int,
       title: maps[0]['title'] as String,
       description: maps[0]['description'] as String,
+      color: Colors.blue,
     );
   }
 }

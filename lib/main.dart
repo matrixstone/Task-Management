@@ -15,6 +15,7 @@ import 'package:task_management/provider/task_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart' as sqflite show databaseFactory;
+import 'package:task_management/pages/project_card.dart';
 
 void main() {
   if (!kIsWeb) {
@@ -130,11 +131,9 @@ class _MainPageState extends State<MainPage> {
                   return ListView.builder(
                     itemCount: projects.length,
                     itemBuilder: (_, index) {
-                      return ListTile(
-                          leading: const Icon(Icons.list),
-                          onTap: () => _navigateProjectEditPage(
-                              context, projectProvider, projects[index]),
-                          title: Text("Project: ${projects[index].title}"));
+                      return ProjectCard(
+                          project: projects[index],
+                          projectProvider: projectProvider);
                     },
                   );
                 });

@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
 import '../model/project.dart';
@@ -49,6 +50,7 @@ class ProjectProvider extends ChangeNotifier {
         id: maps[i]['id'] as int,
         title: maps[i]['title'] as String,
         description: maps[i]['description'] as String,
+        color: Colors.blue,
       );
     });
   }
