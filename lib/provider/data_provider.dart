@@ -26,7 +26,7 @@ class DataProvider extends ChangeNotifier {
             'CREATE TABLE tasks(id INTEGER PRIMARY KEY, projectId INTEGER, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER, status TEXT)',
           );
           await db.execute(
-            'CREATE TABLE IF NOT EXISTS projects(id INTEGER PRIMARY KEY, title TEXT, description TEXT)',
+            'CREATE TABLE IF NOT EXISTS projects(id INTEGER PRIMARY KEY, title TEXT, description TEXT, color INTEGER)',
           );
           return db.execute(
             'CREATE INDEX project_on_tasks_index ON tasks (projectId)',
@@ -45,7 +45,7 @@ class DataProvider extends ChangeNotifier {
     // final List<Map<String, dynamic>> maps = await _database.query('tasks');
 
     final List<Map<String, dynamic>> maps = await _database.rawQuery('''
-SELECT tasks.*, projects.title as projectTitle, projects.description AS projectDescription
+SELECT tasks.*, projects.title as projectTitle, projects.description AS projectDescription, projects.color AS projectColor
 FROM tasks
 JOIN projects ON tasks.projectId = projects.id
 ''');
@@ -56,7 +56,7 @@ JOIN projects ON tasks.projectId = projects.id
           id: task['projectId'] as int,
           title: task['projectTitle'] as String,
           description: task['projectDescription'] as String,
-          color: Colors.blue);
+          color: Color(task['projectColor'] as int));
       if (!projectToTime.containsKey(project)) {
         projectToTime[project] = {};
       }
@@ -89,7 +89,7 @@ JOIN projects ON tasks.projectId = projects.id
       id: maps[0]['id'] as int,
       title: maps[0]['title'] as String,
       description: maps[0]['description'] as String,
-      color: Colors.blue,
+      color: Color(maps[0]['color'] as int),
     );
   }
 }

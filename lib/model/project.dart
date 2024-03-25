@@ -18,7 +18,7 @@ class Project {
       'id': id,
       'title': title,
       'description': 'abc',
-      'color': color.toString(),
+      'color': color.value,
     };
   }
 
