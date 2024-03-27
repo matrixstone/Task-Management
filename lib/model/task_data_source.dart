@@ -37,6 +37,11 @@ class TaskDataSource extends CalendarDataSource<Task> {
   }
 
   @override
+  Color getColor(int index) {
+    return appointments![index].backgroundColor;
+  }
+
+  @override
   Task? convertAppointmentToObject(Task? customData, Appointment appointment) {
     // TODO: implement convertAppointmentToObject
     return Task(

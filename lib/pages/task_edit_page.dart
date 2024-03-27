@@ -131,8 +131,8 @@ class _TaskEditPageState extends State<TaskEditPage> {
 
   // TODO: Add TextFormField
   Widget buildTitle(TaskProvider taskProvider) => TextFormField(
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        decoration: InputDecoration(
+        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        decoration: const InputDecoration(
           border: UnderlineInputBorder(),
           hintText: 'Add Title',
         ),
@@ -259,6 +259,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
         fromDate: from,
         toDate: to,
         status: taskStatus,
+        backgroundColor: selectedProject.color,
       );
       await taskProvider.addTask(task).then((value) {
         Navigator.of(context).pop(task);
