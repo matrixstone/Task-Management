@@ -20,13 +20,13 @@ class DataProvider extends ChangeNotifier {
     _database = await factory.openDatabase(
       join(await getDatabasesPath(), 'task_management.db'),
       options: OpenDatabaseOptions(
-        version: 1,
+        version: 2,
         onCreate: (db, version) async {
           await db.execute(
             'CREATE TABLE tasks(id INTEGER PRIMARY KEY, projectId INTEGER, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER, status TEXT)',
           );
           await db.execute(
-            'CREATE TABLE IF NOT EXISTS projects(id INTEGER PRIMARY KEY, title TEXT, description TEXT, color INTEGER)',
+            'CREATE TABLE projects(id INTEGER PRIMARY KEY, title TEXT, description TEXT, color INTEGER)',
           );
           return db.execute(
             'CREATE INDEX project_on_tasks_index ON tasks (projectId)',

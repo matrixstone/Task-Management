@@ -26,11 +26,19 @@ class ProjectEditPage extends StatefulWidget {
 class _ProjectEditPageState extends State<ProjectEditPage> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController? titleController;
+  List<ColorItem> projectColorList = <ColorItem>[
+    ColorItem('Green', 0xff72ba42),
+    ColorItem('Blue', 0xff5767cb),
+    ColorItem('Orange', 0xfff57d47),
+    ColorItem('Purple', 0xff8c75d0)
+  ];
+  late Color selectedColor;
 
   @override
   void initState() {
     super.initState();
     titleController = TextEditingController(text: widget.project?.title);
+    selectedColor = Color(projectColorList[0].colorCode);
   }
 
   @override
@@ -85,25 +93,21 @@ class _ProjectEditPageState extends State<ProjectEditPage> {
       );
 
   Widget buildColorSelector() {
-    List<ColorItem> list = <ColorItem>[
-      ColorItem('Green', 0xff72ba42),
-      ColorItem('Blue', 0xff5767cb),
-      ColorItem('Orange', 0xfff57d47),
-      ColorItem('Purple', 0xff8c75d0)
-    ];
-
-    return DropdownMenu<Container>(
-      initialSelection: Container(color: Colors.blue, child: const Text("one")),
-      onSelected: (Container? value) {
+    return DropdownMenu<Color>(
+      initialSelection:
+          // Container(color: Colors.blue, child: const Text("Blue")),
+          Color(projectColorList[0].colorCode),
+      onSelected: (Color? value) {
         // This is called when the user selects an item.
-        // setState(() {
-        //   dropdownValue = value!;
-        // });
+        setState(() {
+          selectedColor = value!;
+        });
       },
       dropdownMenuEntries:
-          list.map<DropdownMenuEntry<Container>>((ColorItem item) {
-        return DropdownMenuEntry<Container>(
-            value: Container(color: Colors.blue, child: Text(item.name)),
+          projectColorList.map<DropdownMenuEntry<Color>>((ColorItem item) {
+        return DropdownMenuEntry<Color>(
+            // value: Container(color: Colors.blue, child: Text(item.name)),
+            value: Color(item.colorCode),
             label: item.name,
             style: MenuItemButton.styleFrom(
                 backgroundColor: Color(item.colorCode)));
@@ -119,7 +123,7 @@ class _ProjectEditPageState extends State<ProjectEditPage> {
         id: widget.project?.id,
         title: titleController!.text,
         description: '',
-        color: Colors.blue,
+        color: selectedColor,
       );
       await projectProvider.addProject(project).then((value) {
         Navigator.of(context).pop(project);

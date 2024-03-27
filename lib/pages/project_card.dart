@@ -14,14 +14,9 @@ class ProjectCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // return ListTile(
-    //     leading: const Icon(Icons.list),
-    //     onTap: () =>
-    //         _navigateProjectEditPage(context, projectProvider, project),
-    //     title: Text("Project: ${project.title}"));
     return Card(
         elevation: 1,
-        color: Colors.blue,
+        color: project.color,
         child: ListTile(
           onTap: () =>
               _navigateProjectEditPage(context, projectProvider, project),
@@ -31,9 +26,6 @@ class ProjectCard extends StatelessWidget {
                 fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ));
-    // child: Padding(
-    //     padding: const EdgeInsets.all(8.0),
-    //     child: Text("Project: ${project.title}")));
   }
 
   Future<void> _navigateProjectEditPage(
