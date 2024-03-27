@@ -12,6 +12,25 @@ import 'package:flutter/foundation.dart';
 
 class TaskProvider extends ChangeNotifier {
   late Database _database;
+
+  /// Create tables
+  void _createTableV2(Batch batch) {
+    batch.execute(
+      'CREATE TABLE tasks(id INTEGER PRIMARY KEY, projectId INTEGER, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER, status TEXT)',
+    );
+    batch.execute(
+      'CREATE TABLE projects(id INTEGER PRIMARY KEY, title TEXT, description TEXT, color INTEGER)',
+    );
+    batch.execute(
+      'CREATE INDEX project_on_tasks_index ON tasks (projectId)',
+    );
+  }
+
+  /// Update project table V1 to V2
+  void _updateProjectTableV1toV2(Batch batch) {
+    batch.execute('ALTER TABLE projects ADD color INTEGER');
+  }
+
   Future<void> initializeDatabase() async {
     var factory = databaseFactory;
 
@@ -20,15 +39,17 @@ class TaskProvider extends ChangeNotifier {
       options: OpenDatabaseOptions(
         version: 2,
         onCreate: (db, version) async {
-          await db.execute(
-            'CREATE TABLE tasks(id INTEGER PRIMARY KEY, projectId INTEGER, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER, status TEXT)',
-          );
-          await db.execute(
-            'CREATE TABLE projects(id INTEGER PRIMARY KEY, title TEXT, description TEXT, color INTEGER)',
-          );
-          return db.execute(
-            'CREATE INDEX project_on_tasks_index ON tasks (projectId)',
-          );
+          var batch = db.batch();
+          _createTableV2(batch);
+          await batch.commit();
+        },
+        onUpgrade: (db, oldVersion, newVersion) async {
+          var batch = db.batch();
+          if (oldVersion == 1) {
+            // We update project table with new column
+            _updateProjectTableV1toV2(batch);
+          }
+          await batch.commit();
         },
       ),
     );
