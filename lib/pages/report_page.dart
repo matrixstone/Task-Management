@@ -93,44 +93,19 @@ class _ReportPageState extends State<ReportPage> {
           dateTimeMap[dateKey] = entry.value;
         }
       }
-      // value.entries.forEach((entry) {
-      //   if (entry.key.isBefore(startDateOnlyFormat)) {
-      //     continue;
-      //   }
-      //   String dateKey = DateFormat('yyyy-MM-dd').format(entry.key);
-      //   if (dateTimeMap.containsKey(dateKey)) {
-      //     dateTimeMap[dateKey] = dateTimeMap[dateKey]! + entry.value;
-      //   } else {
-      //     dateTimeMap[dateKey] = entry.value;
-      //   }
-      // });
       List<ChartData> dateAndSpendTime =
           dateTimeMap.entries.map((e) => ChartData(e.key, e.value)).toList();
       dateAndSpendTime.sort((a, b) => a.x.compareTo(b.x));
-      series.add(LineSeries<ChartData, String>(
+      series.add(SplineSeries<ChartData, String>(
           dataSource: dateAndSpendTime,
           xValueMapper: (ChartData data, _) => data.x,
           yValueMapper: (ChartData data, _) => data.y,
           dataLabelSettings: const DataLabelSettings(isVisible: true),
           isVisibleInLegend: true,
+          color: project.color,
           name: project.title));
     });
     return series;
-
-    // return LineSeries<ChartData, String>(
-    //     dataSource: [
-    //       // Bind data source
-    //       ChartData('2024-01-06', 35),
-    //       ChartData('2024-01-07', 28),
-    //       ChartData('2024-01-08', 34),
-    //       ChartData('2024-01-09', 32),
-    //       ChartData('2024-01-10', 40)
-    //     ],
-    //     xValueMapper: (ChartData data, _) => data.x,
-    //     yValueMapper: (ChartData data, _) => data.y,
-    //     dataLabelSettings: const DataLabelSettings(isVisible: true),
-    //     isVisibleInLegend: true,
-    //     name: 'Series 1');
   }
 
   List<PieSeries<ChartData, String>> _getRadiusPieSeries() {
@@ -143,20 +118,16 @@ class _ReportPageState extends State<ReportPage> {
       return ChartData(entry.key.title, accumulativeTime);
     }).toList();
 
+    Map<String, Color> projectColors = widget.projectsToTime
+        .map((key, value) => MapEntry(key.title, key.color));
+
     return <PieSeries<ChartData, String>>[
       PieSeries<ChartData, String>(
-          // dataSource: <ChartData>[
-          //   ChartData(
-          //     'Argentina',
-          //     505370,
-          //   ),
-          //   ChartData('Belgium', 551500),
-          //   ChartData('Cuba', 312685),
-          // ],
           dataSource: projectTime,
-          xValueMapper: (ChartData data, _) => data.x as String,
+          xValueMapper: (ChartData data, _) => data.x,
           yValueMapper: (ChartData data, _) => data.y,
-          dataLabelMapper: (ChartData data, _) => data.x as String,
+          pointColorMapper: (ChartData data, _) => projectColors[data.x],
+          dataLabelMapper: (ChartData data, _) => data.x,
           startAngle: 100,
           endAngle: 100,
           // pointRadiusMapper: (ChartData data, _) => data.text,
