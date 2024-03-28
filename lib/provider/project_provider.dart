@@ -19,10 +19,10 @@ class ProjectProvider extends ChangeNotifier {
   /// Create tables
   void _createTableV2(Batch batch) {
     batch.execute(
-      'CREATE TABLE tasks(id INTEGER PRIMARY KEY, projectId INTEGER, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER, status TEXT)',
+      'CREATE TABLE IF NOT EXISTS tasks(id INTEGER PRIMARY KEY, projectId INTEGER, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER, status TEXT)',
     );
     batch.execute(
-      'CREATE TABLE projects(id INTEGER PRIMARY KEY, title TEXT, description TEXT, color INTEGER)',
+      'CREATE TABLE IF NOT EXISTS projects(id INTEGER PRIMARY KEY, title TEXT, description TEXT, color INTEGER)',
     );
     batch.execute(
       'CREATE INDEX project_on_tasks_index ON tasks (projectId)',
@@ -67,11 +67,15 @@ class ProjectProvider extends ChangeNotifier {
     final List<Map<String, dynamic>> maps = await _database.query('projects');
 
     return List.generate(maps.length, (i) {
+      Color projectColor = Colors.blue;
+      if (maps[i]['color'] != null) {
+        projectColor = Color(maps[i]['color'] as int);
+      }
       return Project(
         id: maps[i]['id'] as int,
         title: maps[i]['title'] as String,
         description: maps[i]['description'] as String,
-        color: Color(maps[i]['color'] as int),
+        color: projectColor,
       );
     });
   }
@@ -84,19 +88,45 @@ class ProjectProvider extends ChangeNotifier {
 
     await initializeDatabase();
 
-    // try {
-    log('Testing ${project.toMap()}');
-    int fetchRes = await _database.insert(
-      'projects',
-      project.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-    //     .then((value) {
-    //   notifyListeners();
-    // });
-    // } on DatabaseException catch (e) {
-    //   log('Error: {$e}');
-    // }
+    try {
+      // log('Testing project write ${project.toMap()}');
+      int fetchRes = await _database.insert(
+        'projects',
+        project.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+      //     .then((value) {
+      //   notifyListeners();
+      // });
+    } on DatabaseException catch (e) {
+      log('Insert Error: {$e}');
+    }
+
+    notifyListeners();
+    return true;
+  }
+
+  Future<bool> deleteProject(Project project) async {
+    // _events.add(event);
+
+    // Update database
+    WidgetsFlutterBinding.ensureInitialized();
+
+    await initializeDatabase();
+
+    try {
+      // log('Testing project write ${project.toMap()}');
+      int deleteRes = await _database.delete(
+        'projects',
+        where: 'id = ?',
+        whereArgs: [project.id],
+      );
+      //     .then((value) {
+      //   notifyListeners();
+      // });
+    } on DatabaseException catch (e) {
+      log('Delete Error: {$e}');
+    }
 
     notifyListeners();
     return true;

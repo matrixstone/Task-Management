@@ -21,7 +21,7 @@ class ProjectCard extends StatelessWidget {
           onTap: () =>
               _navigateProjectEditPage(context, projectProvider, project),
           title: Text(
-            "Project: ${project.title}",
+            project.title,
             style: const TextStyle(
                 fontWeight: FontWeight.bold, color: Colors.white),
           ),

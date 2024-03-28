@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
       exit(1);
     };
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Task Management',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         // primarySwatch: Colors.red,
@@ -205,10 +205,6 @@ class _MainPageState extends State<MainPage> {
       );
     } else {
       return Scaffold(
-        // drawer: NavigationDrawerWidget(
-        //     setCalendarView: _setCalendarView,
-        //     setPageIndex: _setPageIndex,
-        //     selectedIndex: navigationBarIndex),
         appBar: AppBar(
           title: const Text('Task Management'),
           centerTitle: true,

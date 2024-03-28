@@ -52,7 +52,7 @@ class _ProjectEditPageState extends State<ProjectEditPage> {
     return Scaffold(
       appBar: AppBar(
         leading: const CloseButton(),
-        actions: buildEditingActions(widget.projectProvider),
+        // actions: buildEditingActions(widget.projectProvider),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(12),
@@ -63,8 +63,13 @@ class _ProjectEditPageState extends State<ProjectEditPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               buildTitle(widget.projectProvider),
-              const SizedBox(height: 2),
+              const SizedBox(height: 20),
               buildColorSelector(),
+              const SizedBox(height: 20),
+              Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: buildEditingActions(widget.projectProvider)),
               // buildDateTimePickers(),
             ],
           ),
@@ -77,7 +82,11 @@ class _ProjectEditPageState extends State<ProjectEditPage> {
         ElevatedButton.icon(
             onPressed: () => saveForm(projectProvider),
             icon: const Icon(Icons.done),
-            label: const Text('Save'))
+            label: const Text('Save')),
+        ElevatedButton.icon(
+            onPressed: () => deleteProject(projectProvider),
+            icon: const Icon(Icons.delete),
+            label: const Text('Delete'))
       ];
 
   Widget buildTitle(ProjectProvider projectProvider) => TextFormField(
@@ -97,12 +106,24 @@ class _ProjectEditPageState extends State<ProjectEditPage> {
       initialSelection:
           // Container(color: Colors.blue, child: const Text("Blue")),
           Color(projectColorList[0].colorCode),
+      helperText: 'Select theme color for project',
+      requestFocusOnTap: true,
+      label: const Text('Color'),
+      // Rounded selection box
+      inputDecorationTheme: const InputDecorationTheme(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(20.0),
+          ),
+        ),
+      ),
       onSelected: (Color? value) {
         // This is called when the user selects an item.
         setState(() {
           selectedColor = value!;
         });
       },
+      width: 300,
       dropdownMenuEntries:
           projectColorList.map<DropdownMenuEntry<Color>>((ColorItem item) {
         return DropdownMenuEntry<Color>(
@@ -110,7 +131,7 @@ class _ProjectEditPageState extends State<ProjectEditPage> {
             value: Color(item.colorCode),
             label: item.name,
             style: MenuItemButton.styleFrom(
-                backgroundColor: Color(item.colorCode)));
+                foregroundColor: Color(item.colorCode)));
       }).toList(),
     );
   }
@@ -128,6 +149,16 @@ class _ProjectEditPageState extends State<ProjectEditPage> {
       await projectProvider.addProject(project).then((value) {
         Navigator.of(context).pop(project);
       });
+    }
+  }
+
+  Future deleteProject(ProjectProvider projectProvider) async {
+    if (widget.project!.id != null) {
+      await projectProvider.deleteProject(widget.project!).then((value) {
+        Navigator.of(context).pop();
+      });
+    } else {
+      Navigator.of(context).pop();
     }
   }
 }
