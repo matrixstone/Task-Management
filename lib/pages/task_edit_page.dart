@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:task_management/model/project.dart';
 import 'package:task_management/provider/project_provider.dart';
 
+import 'dart:developer';
 import '../model/task.dart';
 import '../provider/task_provider.dart';
 import '../utils.dart';
@@ -40,11 +41,12 @@ class _TaskEditPageState extends State<TaskEditPage> {
     from = widget.task?.fromDate ?? DateTime.now();
     to = widget.task?.toDate ?? DateTime.now().add(const Duration(hours: 1));
     titleController = TextEditingController(text: widget.task?.title);
-    int selectedProjectIndex = 0;
-    if (widget.task != null) {
-      selectedProjectIndex = widget.task!.projectId - 1;
-    }
-    selectedProject = widget.projects[selectedProjectIndex];
+    int selectedProjectId = widget.task?.projectId ?? 0;
+    selectedProject = widget.projects
+        .where((element) => element.id == selectedProjectId)
+        .first;
+
+    // selectedProject = widget.projects[selectedProjectIndex];
     taskStatus = widget.task?.status ?? TaskStatus.notStarted;
   }
 
