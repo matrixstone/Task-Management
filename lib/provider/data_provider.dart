@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import '../model/task.dart';
 import '../model/project.dart';
@@ -63,7 +64,8 @@ class DataProvider extends ChangeNotifier {
     );
   }
 
-  Future<Map<Project, Map<DateTime, double>>> getProjectsToTime() async {
+  Future<Map<Project, Map<DateTime, double>>> getProjectsToTime(
+      int lastXDays) async {
     // Get all tasks
     WidgetsFlutterBinding.ensureInitialized();
 
@@ -75,6 +77,7 @@ class DataProvider extends ChangeNotifier {
 SELECT tasks.*, projects.title as projectTitle, projects.description AS projectDescription, projects.color AS projectColor
 FROM tasks
 JOIN projects ON tasks.projectId = projects.id
+WHERE tasks.fromDate >= date('now', '-$lastXDays day')
 ''');
     Map<Project, Map<DateTime, double>> projectToTime = {};
 

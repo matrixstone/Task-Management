@@ -145,7 +145,7 @@ class _MainPageState extends State<MainPage> {
                 listenable: projectProvider,
                 builder: (BuildContext context, Widget? child) {
                   return FutureBuilder<Map<Project, Map<DateTime, double>>>(
-                      future: dataProvider.getProjectsToTime(),
+                      future: dataProvider.getProjectsToTime(30),
                       builder: (BuildContext context,
                           AsyncSnapshot<Map<Project, Map<DateTime, double>>>
                               snapshot) {
@@ -154,7 +154,9 @@ class _MainPageState extends State<MainPage> {
                           projectsToTime = snapshot.data!;
                         }
 
-                        return ReportPage(projectsToTime: projectsToTime);
+                        return ReportPage(
+                            projectsToTime: projectsToTime,
+                            dataProvider: dataProvider);
                       });
                 });
           }),
