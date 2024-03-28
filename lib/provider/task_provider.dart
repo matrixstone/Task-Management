@@ -16,10 +16,16 @@ class TaskProvider extends ChangeNotifier {
   /// Create tables
   void _createTableV2(Batch batch) {
     batch.execute(
-      'CREATE TABLE IF NOT EXISTS tasks(id INTEGER PRIMARY KEY, projectId INTEGER, title TEXT, description TEXT, fromDate TEXT, toDate TEXT, backgroundColor INTEGER, isAllDay INTEGER, status TEXT)',
+      'CREATE TABLE IF NOT EXISTS projects'
+      '(id INTEGER PRIMARY KEY, title TEXT, description TEXT, color INTEGER)',
     );
     batch.execute(
-      'CREATE TABLE IF NOT EXISTS projects(id INTEGER PRIMARY KEY, title TEXT, description TEXT, color INTEGER)',
+      'CREATE TABLE IF NOT EXISTS tasks'
+      '(id INTEGER PRIMARY KEY AUTOINCREMENT, projectId INTEGER, '
+      'title TEXT, description TEXT, fromDate TEXT, '
+      'toDate TEXT, backgroundColor INTEGER, '
+      'isAllDay INTEGER, status TEXT, '
+      'FOREIGN KEY (projectId) REFERENCES projects (id) ON DELETE NO ACTION ON UPDATE NO ACTION)',
     );
     batch.execute(
       'CREATE INDEX project_on_tasks_index ON tasks (projectId)',
