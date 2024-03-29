@@ -36,8 +36,6 @@ class _ReportPageState extends State<ReportPage> {
 
   @override
   Widget build(BuildContext context) {
-    bool isCardView = true;
-
     return ListView(
       children: [
         buildLastXDaysSelector(),
@@ -47,13 +45,14 @@ class _ReportPageState extends State<ReportPage> {
             // // Initialize category axis
             // primaryXAxis: const CategoryAxis(),
             // primaryYAxis: NumericAxis(),
+            title: const ChartTitle(text: 'Daily Focus Timeseries'),
             legend: const Legend(isVisible: true),
             zoomPanBehavior: ZoomPanBehavior(
                 // Enables pinch zooming
                 enablePanning: true,
                 enablePinching: true,
                 zoomMode: ZoomMode.x),
-            primaryXAxis: CategoryAxis(
+            primaryXAxis: const CategoryAxis(
               majorGridLines: MajorGridLines(width: 0),
               labelIntersectAction: AxisLabelIntersectAction.hide,
               autoScrollingDelta: 7,
@@ -67,7 +66,7 @@ class _ReportPageState extends State<ReportPage> {
               //     20, // set the visible minimum as the last value's chart data index.
               // maximumLabels: 10,
             ),
-            primaryYAxis: NumericAxis(
+            primaryYAxis: const NumericAxis(
               majorGridLines: MajorGridLines(width: 0),
               labelStyle: TextStyle(color: Color(0xFF71AF99), fontSize: 16),
               minimum: 0,
@@ -77,20 +76,15 @@ class _ReportPageState extends State<ReportPage> {
                 _getTimeseriesCartesianChartData()),
         // Shows pie chart of how many hours spent on each project in total
         SfCircularChart(
-          title: ChartTitle(
-              text: isCardView
-                  ? ''
-                  : 'Various countries population density and area'),
-          legend: Legend(
-              isVisible: !isCardView,
-              overflowMode: LegendItemOverflowMode.wrap),
+          title: const ChartTitle(text: 'Accumulated Focus Time'),
+          legend: const Legend(
+              isVisible: true, overflowMode: LegendItemOverflowMode.wrap),
           series: _getRadiusPieSeries(),
           onTooltipRender: (TooltipArgs args) {
             final NumberFormat format = NumberFormat.decimalPattern();
             args.text =
-                args.dataPoints![args.pointIndex!.toInt()].x.toString() +
-                    ' : ' +
-                    format.format(args.dataPoints![args.pointIndex!.toInt()].y);
+                '${args.dataPoints![args.pointIndex!.toInt()].x.toString()}'
+                ' : ${format.format(args.dataPoints![args.pointIndex!.toInt()].y)}';
           },
           tooltipBehavior: TooltipBehavior(enable: true),
         )
